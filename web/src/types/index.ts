@@ -3,9 +3,9 @@ export type MenuCategory = 'coffee' | 'beverage' | 'bakery';
 
 // 카테고리 목록 (디저트 제거)
 export const CATEGORIES: { id: MenuCategory; name: string; icon: string }[] = [
-  { id: 'coffee', name: '커피', icon: '☕' },
-  { id: 'beverage', name: '음료', icon: '🧃' },
-  { id: 'bakery', name: '베이커리', icon: '🥐' },
+  { id: 'coffee', name: '커피', icon: '☕️' },
+  { id: 'beverage', name: '음료', icon: '🥤' },
+  { id: 'bakery', name: '베이커리', icon: '🍞' },
 ];
 
 // 메뉴 아이템 타입

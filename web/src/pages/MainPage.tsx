@@ -46,6 +46,30 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
     },
   ];
 
+  // 이벤트 카드 데이터
+  const eventCards = [
+    {
+      id: 'double-stamp',
+      badge: '매주 월요일',
+      title: '스탬프 더블 적립',
+      description: '아침 9-11시 아메리카노 주문 시 스탬프 2배 적립',
+      period: '~ 12/31',
+      bg: '#204031',
+      isDark: true,
+      icon: '🎟️',
+    },
+    {
+      id: 'holiday-set',
+      badge: '연말 한정',
+      title: '홀리데이 세트',
+      description: '크리스마스 라떼 + 시나몬 번 세트 15% 할인',
+      period: '12/15 - 12/31',
+      bg: '#FFFFFF',
+      isDark: false,
+      icon: '✨',
+    },
+  ];
+
   // 메뉴 실시간 구독
   useEffect(() => {
     const unsubscribe = subscribeToMenus((menuList) => {
@@ -62,10 +86,12 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
     return () => clearInterval(timer);
   }, [banners.length]);
 
-  // 추천 메뉴 (4개)
-  const recommendedMenus = menus
-    .filter((menu) => menu.isAvailable)
-    .slice(0, 4);
+  // 추천 메뉴: 커피 1개 우선 포함 후 4개 구성
+  const availableMenus = menus.filter((menu) => menu.isAvailable);
+  const coffeePick = availableMenus.find((menu) => menu.category === 'coffee');
+  const recommendedMenus = coffeePick
+    ? [coffeePick, ...availableMenus.filter((menu) => menu.id !== coffeePick.id)].slice(0, 4)
+    : availableMenus.slice(0, 4);
 
   // 가격 포맷
   const formatPrice = (price: number) => {
@@ -457,6 +483,111 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
             ))}
           </div>
         )}
+      </section>
+
+      {/* 이벤트 카드 섹션 */}
+      <section style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 1.5rem 2.5rem'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.25rem'
+        }}>
+          <h2 style={{
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: '#1E1E1E',
+            letterSpacing: '-0.02em'
+          }}>
+            이벤트
+          </h2>
+          <span style={{ color: '#888', fontSize: '0.95rem' }}>
+            놓치기 전에 참여해 보세요
+          </span>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1rem'
+        }}>
+          {eventCards.map((event) => (
+            <div
+              key={event.id}
+              style={{
+                background: event.bg,
+                borderRadius: '1rem',
+                padding: '1.25rem 1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                border: event.isDark ? 'none' : `1px solid ${MAIN_COLOR}20`
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{
+                  backgroundColor: event.isDark ? 'white' : `${MAIN_COLOR}10`,
+                  borderRadius: '999px',
+                  padding: '0.25rem 0.75rem',
+                  fontSize: '0.8rem',
+                  fontWeight: '700',
+                  color: event.isDark ? MAIN_COLOR : MAIN_COLOR
+                }}>
+                  {event.badge}
+                </span>
+                <span style={{ fontSize: '1.25rem' }}>{event.icon}</span>
+              </div>
+              <div>
+                <h3 style={{
+                  fontSize: '1.2rem',
+                  fontWeight: '700',
+                  color: event.isDark ? 'white' : '#1E1E1E',
+                  marginBottom: '0.25rem'
+                }}>
+                  {event.title}
+                </h3>
+                <p style={{ color: event.isDark ? 'rgba(255,255,255,0.9)' : '#4A4A4A', lineHeight: 1.4, margin: 0 }}>
+                  {event.description}
+                </p>
+              </div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: '0.5rem'
+              }}>
+                <span style={{ color: event.isDark ? 'rgba(255,255,255,0.85)' : '#555', fontWeight: '600' }}>{event.period}</span>
+                <button
+                  onClick={onOrderClick}
+                  style={{
+                    backgroundColor: event.isDark ? 'white' : MAIN_COLOR,
+                    color: event.isDark ? MAIN_COLOR : 'white',
+                    border: 'none',
+                    borderRadius: '999px',
+                    padding: '0.6rem 1rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    boxShadow: event.isDark ? '0 6px 16px rgba(32,64,49,0.25)' : '0 6px 16px rgba(0,0,0,0.08)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  주문하기
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* 카테고리 섹션 */}
