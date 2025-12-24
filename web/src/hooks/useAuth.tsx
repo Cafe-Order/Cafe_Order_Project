@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from 'firebase/auth';
 import { onAuthChange, signInWithGoogle, logout } from '../services/authService';
+import { subscribeToCart } from '../services/cartService';
+import { useCartStore } from '../store/useStore';
 
 // Context 타입 정의
 interface AuthContextType {
@@ -21,17 +23,41 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const { setUserId, setItems, setLoading: setCartLoading } = useCartStore();
 
   useEffect(() => {
     // Firebase 인증 상태 감시
-    const unsubscribe = onAuthChange((user) => {
+    const unsubscribeAuth = onAuthChange((user) => {
       setUser(user);
       setLoading(false);
+      
+      // 장바구니 연동
+      if (user) {
+        setUserId(user.uid);
+        setCartLoading(true);
+        
+        // 장바구니 실시간 구독
+        const unsubscribeCart = subscribeToCart(user.uid, (items) => {
+          setItems(items);
+          setCartLoading(false);
+        });
+        
+        // 클린업에 장바구니 구독 해제 추가
+        return () => {
+          unsubscribeCart();
+        };
+      } else {
+        // 로그아웃 시 장바구니 초기화
+        setUserId(null);
+        setItems([]);
+        setCartLoading(false);
+      }
     });
 
     // 클린업
-    return () => unsubscribe();
-  }, []);
+    return () => unsubscribeAuth();
+  }, [setUserId, setItems, setCartLoading]);
 
   // Google 로그인
   const loginWithGoogle = async () => {
@@ -59,6 +85,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         throw error;
       }
       setUser(null);
+      // 장바구니 초기화
+      setUserId(null);
+      setItems([]);
     } catch (error) {
       console.error('로그아웃 에러:', error);
       throw error;

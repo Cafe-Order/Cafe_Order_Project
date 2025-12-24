@@ -28,7 +28,7 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
     if (!user) return;
 
     const unsubscribe = subscribeToUserOrders(user.uid, (orderList) => {
-      console.log('주문 내역:', orderList); // 디버깅용
+      console.log('주문 내역:', orderList);
       setOrders(orderList);
       setLoading(false);
     });
@@ -56,7 +56,6 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
   // 주문 아이템에서 이름 안전하게 가져오기
   const getItemName = (item: any): string => {
     if (!item) return '알 수 없음';
-    // menuItem.name 또는 name 직접 접근
     if (item.menuItem?.name) return item.menuItem.name;
     if (item.name) return item.name;
     return '알 수 없음';
@@ -134,14 +133,8 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {orders.map((order) => {
               const statusInfo = STATUS_MAP[order.status] || STATUS_MAP.pending;
-              
-              // 안전하게 아이템 정보 가져오기
               const items = order.items || [];
-              const itemCount = items.reduce((sum, item) => sum + getItemQuantity(item), 0);
-              const firstItemName = items.length > 0 ? getItemName(items[0]) : '주문 상품';
-              const displayName = items.length > 1 
-                ? `${firstItemName} 외 ${items.length - 1}개`
-                : firstItemName;
+              const totalQuantity = items.reduce((sum, item) => sum + getItemQuantity(item), 0);
 
               return (
                 <div
@@ -178,13 +171,21 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
                     </span>
                   </div>
 
-                  {/* 중앙: 주문 정보 */}
+                  {/* 중앙: 모든 메뉴 나열 */}
                   <div style={{ marginBottom: '0.75rem' }}>
-                    <p style={{ fontWeight: '600', fontSize: '1rem' }}>
-                      {displayName}
-                    </p>
-                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                      총 {itemCount}개 상품
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      {items.map((item, index) => (
+                        <p key={index} style={{ 
+                          fontWeight: '500', 
+                          fontSize: '0.95rem',
+                          color: '#374151'
+                        }}>
+                          {getItemName(item)} <span style={{ color: '#9ca3af' }}>× {getItemQuantity(item)}</span>
+                        </p>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                      총 {totalQuantity}개 상품
                     </p>
                   </div>
 
