@@ -111,7 +111,13 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <span style={{ color: 'white', fontSize: '1.25rem' }}>☕</span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>
+                <line x1="6" y1="2" x2="6" y2="4"/>
+                <line x1="10" y1="2" x2="10" y2="4"/>
+                <line x1="14" y1="2" x2="14" y2="4"/>
+              </svg>
             </div>
             <span style={{ 
               fontSize: '1.5rem', 
@@ -124,7 +130,7 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
           </div>
 
           {/* 네비게이션 */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {/* 주문하기 버튼 */}
             <button
               onClick={onOrderClick}
@@ -151,7 +157,12 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              Order Now
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              Order
             </button>
 
             {user ? (
@@ -528,7 +539,10 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <span style={{ fontSize: '1.25rem' }}>☕</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>
+              </svg>
             </div>
             <span style={{ fontSize: '1.25rem', fontWeight: '700' }}>CAFE ORDER</span>
           </div>
