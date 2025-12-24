@@ -28,6 +28,7 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
     if (!user) return;
 
     const unsubscribe = subscribeToUserOrders(user.uid, (orderList) => {
+      console.log('주문 내역:', orderList); // 디버깅용
       setOrders(orderList);
       setLoading(false);
     });
@@ -42,6 +43,7 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
 
   // 날짜 포맷
   const formatDate = (date: Date) => {
+    if (!date || !(date instanceof Date)) return '날짜 없음';
     return date.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
@@ -49,6 +51,20 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // 주문 아이템에서 이름 안전하게 가져오기
+  const getItemName = (item: any): string => {
+    if (!item) return '알 수 없음';
+    // menuItem.name 또는 name 직접 접근
+    if (item.menuItem?.name) return item.menuItem.name;
+    if (item.name) return item.name;
+    return '알 수 없음';
+  };
+
+  // 주문 아이템 수량 가져오기
+  const getItemQuantity = (item: any): number => {
+    return item?.quantity || 1;
   };
 
   return (
@@ -118,10 +134,13 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {orders.map((order) => {
               const statusInfo = STATUS_MAP[order.status] || STATUS_MAP.pending;
-              const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
-              const firstItemName = order.items[0]?.menuItem.name || '알 수 없음';
-              const displayName = order.items.length > 1 
-                ? `${firstItemName} 외 ${order.items.length - 1}개`
+              
+              // 안전하게 아이템 정보 가져오기
+              const items = order.items || [];
+              const itemCount = items.reduce((sum, item) => sum + getItemQuantity(item), 0);
+              const firstItemName = items.length > 0 ? getItemName(items[0]) : '주문 상품';
+              const displayName = items.length > 1 
+                ? `${firstItemName} 외 ${items.length - 1}개`
                 : firstItemName;
 
               return (
@@ -181,7 +200,7 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
                       #{order.id.slice(-8).toUpperCase()}
                     </span>
                     <span style={{ fontWeight: 'bold', color: '#78350f' }}>
-                      {formatPrice(order.totalPrice)}
+                      {formatPrice(order.totalPrice || 0)}
                     </span>
                   </div>
                 </div>
