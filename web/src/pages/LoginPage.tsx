@@ -11,6 +11,10 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 메인 컬러
+  const MAIN_COLOR = '#204031';
+  const MAIN_LIGHT = '#2D5A45';
+
   const handleGoogleLogin = async () => {
     setIsLoggingIn(true);
     setError(null);
@@ -42,9 +46,16 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#faf9f7'
+        backgroundColor: '#F9F9F9'
       }}>
-        <p>로딩 중...</p>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: `3px solid #E8F0EC`,
+          borderTopColor: MAIN_COLOR,
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
       </div>
     );
   }
@@ -55,17 +66,17 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#faf9f7',
-      fontFamily: 'system-ui, sans-serif'
+      backgroundColor: '#F9F9F9',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      padding: '1rem'
     }}>
       <div style={{
         backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '1rem',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-        maxWidth: '400px',
+        padding: '3rem 2.5rem',
+        borderRadius: '1.5rem',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        maxWidth: '420px',
         width: '100%',
-        margin: '1rem',
         position: 'relative'
       }}>
         {/* 뒤로가기 버튼 */}
@@ -74,13 +85,17 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
             onClick={onBack}
             style={{
               position: 'absolute',
-              top: '1rem',
-              left: '1rem',
+              top: '1.5rem',
+              left: '1.5rem',
               background: 'none',
               border: 'none',
               fontSize: '1.5rem',
               cursor: 'pointer',
-              padding: '0.5rem'
+              color: '#666',
+              padding: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             ←
@@ -88,12 +103,29 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
         )}
 
         {/* 로고 & 타이틀 */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>☕</div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#78350f' }}>
-            카페 오더
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <div style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            backgroundColor: MAIN_COLOR,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1.5rem'
+          }}>
+            <span style={{ fontSize: '2.5rem' }}>☕</span>
+          </div>
+          <h1 style={{ 
+            fontSize: '1.75rem', 
+            fontWeight: '800', 
+            color: MAIN_COLOR,
+            marginBottom: '0.5rem',
+            letterSpacing: '-0.02em'
+          }}>
+            CAFE ORDER
           </h1>
-          <p style={{ color: '#a16207', marginTop: '0.5rem' }}>
+          <p style={{ color: '#666', fontSize: '1rem' }}>
             간편하게 주문하세요
           </p>
         </div>
@@ -103,41 +135,50 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
           // 로그인된 상태
           <div style={{ textAlign: 'center' }}>
             <div style={{
-              padding: '1rem',
-              backgroundColor: '#f0fdf4',
-              borderRadius: '0.5rem',
-              marginBottom: '1rem'
+              padding: '1.5rem',
+              backgroundColor: '#E8F5E9',
+              borderRadius: '1rem',
+              marginBottom: '1.5rem'
             }}>
-              <p style={{ color: '#166534', fontWeight: '600' }}>✅ 로그인됨</p>
+              <p style={{ color: MAIN_COLOR, fontWeight: '600', marginBottom: '1rem' }}>
+                ✓ 로그인 완료
+              </p>
               {user.photoURL && (
                 <img
                   src={user.photoURL}
                   alt="프로필"
                   style={{
-                    width: '60px',
-                    height: '60px',
+                    width: '70px',
+                    height: '70px',
                     borderRadius: '50%',
-                    margin: '1rem auto'
+                    margin: '0 auto 1rem',
+                    display: 'block',
+                    border: `3px solid ${MAIN_COLOR}`
                   }}
                 />
               )}
-              <p style={{ fontWeight: '500' }}>{user.displayName}</p>
-              <p style={{ color: '#666', fontSize: '0.875rem' }}>{user.email}</p>
+              <p style={{ fontWeight: '600', color: '#1E1E1E', fontSize: '1.125rem' }}>
+                {user.displayName}
+              </p>
+              <p style={{ color: '#666', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                {user.email}
+              </p>
             </div>
 
             <button
               onClick={handleLogout}
               style={{
                 width: '100%',
-                padding: '0.75rem',
-                backgroundColor: '#fee2e2',
-                color: '#dc2626',
-                border: 'none',
-                borderRadius: '0.5rem',
+                padding: '1rem',
+                backgroundColor: 'white',
+                color: '#E53935',
+                border: '2px solid #FFCDD2',
+                borderRadius: '0.75rem',
                 fontSize: '1rem',
-                fontWeight: '500',
+                fontWeight: '600',
                 cursor: 'pointer',
-                marginBottom: '1rem'
+                marginBottom: '1rem',
+                transition: 'all 0.2s ease'
               }}
             >
               로그아웃
@@ -148,14 +189,21 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
                 onClick={onLoginSuccess}
                 style={{
                   width: '100%',
-                  padding: '0.75rem',
-                  backgroundColor: '#78350f',
+                  padding: '1rem',
+                  backgroundColor: MAIN_COLOR,
                   color: 'white',
                   border: 'none',
-                  borderRadius: '0.5rem',
+                  borderRadius: '0.75rem',
                   fontSize: '1rem',
-                  fontWeight: '500',
-                  cursor: 'pointer'
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = MAIN_LIGHT;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = MAIN_COLOR;
                 }}
               >
                 주문하러 가기 →
@@ -168,12 +216,13 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
             {/* 에러 메시지 */}
             {error && (
               <div style={{
-                backgroundColor: '#fef2f2',
-                color: '#dc2626',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.5rem',
-                marginBottom: '1rem',
-                fontSize: '0.875rem'
+                backgroundColor: '#FFEBEE',
+                color: '#C62828',
+                padding: '1rem',
+                borderRadius: '0.75rem',
+                marginBottom: '1.5rem',
+                fontSize: '0.9rem',
+                textAlign: 'center'
               }}>
                 {error}
               </div>
@@ -189,14 +238,26 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.75rem',
-                padding: '0.875rem 1rem',
+                padding: '1rem',
                 backgroundColor: 'white',
-                border: '2px solid #e5e7eb',
+                border: '2px solid #E0E0E0',
                 borderRadius: '0.75rem',
                 fontSize: '1rem',
-                fontWeight: '500',
+                fontWeight: '600',
                 cursor: isLoggingIn ? 'not-allowed' : 'pointer',
-                opacity: isLoggingIn ? 0.6 : 1
+                opacity: isLoggingIn ? 0.7 : 1,
+                transition: 'all 0.2s ease',
+                marginBottom: '1rem'
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoggingIn) {
+                  e.currentTarget.style.borderColor = MAIN_COLOR;
+                  e.currentTarget.style.backgroundColor = '#FAFAFA';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#E0E0E0';
+                e.currentTarget.style.backgroundColor = 'white';
               }}
             >
               {isLoggingIn ? (
@@ -209,17 +270,56 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  <span>Google로 계속하기</span>
+                  <span style={{ color: '#333' }}>Google로 계속하기</span>
                 </>
               )}
+            </button>
+
+            {/* 또는 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              margin: '1.5rem 0',
+              color: '#999'
+            }}>
+              <div style={{ flex: 1, height: '1px', backgroundColor: '#E0E0E0' }} />
+              <span style={{ fontSize: '0.875rem' }}>또는</span>
+              <div style={{ flex: 1, height: '1px', backgroundColor: '#E0E0E0' }} />
+            </div>
+
+            {/* 게스트 버튼 */}
+            <button
+              onClick={onOrderClick}
+              style={{
+                width: '100%',
+                padding: '1rem',
+                backgroundColor: MAIN_COLOR,
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.75rem',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = MAIN_LIGHT;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = MAIN_COLOR;
+              }}
+            >
+              메뉴 둘러보기
             </button>
 
             {/* 안내 문구 */}
             <p style={{
               textAlign: 'center',
-              fontSize: '0.75rem',
-              color: '#9ca3af',
-              marginTop: '1.5rem'
+              fontSize: '0.8rem',
+              color: '#999',
+              marginTop: '2rem',
+              lineHeight: 1.5
             }}>
               로그인하면 서비스 이용약관에 동의하게 됩니다
             </p>
@@ -229,5 +329,8 @@ const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
     </div>
   );
 };
+
+// 게스트용 빈 함수
+const onOrderClick = () => {};
 
 export default LoginPage;

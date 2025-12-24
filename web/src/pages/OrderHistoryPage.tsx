@@ -10,12 +10,12 @@ interface OrderHistoryPageProps {
 
 // 주문 상태 한글 변환
 const STATUS_MAP: Record<string, { text: string; color: string; bg: string }> = {
-  pending: { text: '주문 접수 중', color: '#ca8a04', bg: '#fef9c3' },
-  confirmed: { text: '주문 확인', color: '#2563eb', bg: '#dbeafe' },
-  preparing: { text: '준비 중', color: '#ea580c', bg: '#ffedd5' },
-  ready: { text: '준비 완료', color: '#16a34a', bg: '#dcfce7' },
-  completed: { text: '수령 완료', color: '#6b7280', bg: '#f3f4f6' },
-  cancelled: { text: '주문 취소', color: '#dc2626', bg: '#fee2e2' },
+  pending: { text: '주문 접수 중', color: '#F57C00', bg: '#FFF3E0' },
+  confirmed: { text: '주문 확인', color: '#1976D2', bg: '#E3F2FD' },
+  preparing: { text: '음료 준비 중', color: '#7B1FA2', bg: '#F3E5F5' },
+  ready: { text: '픽업 대기', color: '#388E3C', bg: '#E8F5E9' },
+  completed: { text: '수령 완료', color: '#616161', bg: '#F5F5F5' },
+  cancelled: { text: '주문 취소', color: '#D32F2F', bg: '#FFEBEE' },
 };
 
 const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
@@ -23,12 +23,15 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 메인 컬러
+  const MAIN_COLOR = '#204031';
+  const MAIN_LIGHTER = '#E8F0EC';
+
   // 사용자 주문 내역 실시간 구독
   useEffect(() => {
     if (!user) return;
 
     const unsubscribe = subscribeToUserOrders(user.uid, (orderList) => {
-      console.log('주문 내역:', orderList);
       setOrders(orderList);
       setLoading(false);
     });
@@ -69,14 +72,14 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#faf9f7',
-      fontFamily: 'system-ui, sans-serif'
+      backgroundColor: '#F9F9F9',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       {/* 헤더 */}
       <header style={{
         backgroundColor: 'white',
-        padding: '1rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        padding: '1rem 1.5rem',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         position: 'sticky',
         top: 0,
         zIndex: 100
@@ -95,35 +98,67 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
               border: 'none',
               fontSize: '1.5rem',
               cursor: 'pointer',
-              padding: '0.5rem'
+              padding: '0.5rem',
+              color: MAIN_COLOR
             }}
           >
             ←
           </button>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>주문내역</h1>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1E1E1E' }}>
+            주문내역
+          </h1>
         </div>
       </header>
 
       {/* 메인 컨텐츠 */}
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem 1rem' }}>
+      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <p>주문내역을 불러오는 중...</p>
+          <div style={{ textAlign: 'center', padding: '4rem' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              border: `3px solid ${MAIN_LIGHTER}`,
+              borderTopColor: MAIN_COLOR,
+              borderRadius: '50%',
+              margin: '0 auto',
+              animation: 'spin 1s linear infinite'
+            }} />
+            <p style={{ marginTop: '1rem', color: '#888' }}>주문내역을 불러오는 중...</p>
+            <style>{`
+              @keyframes spin {
+                to { transform: rotate(360deg); }
+              }
+            `}</style>
           </div>
         ) : orders.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-            <p style={{ fontSize: '4rem', marginBottom: '1rem' }}>📋</p>
-            <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>주문내역이 없습니다</p>
+          <div style={{ textAlign: 'center', padding: '5rem 1rem' }}>
+            <div style={{
+              width: '100px',
+              height: '100px',
+              borderRadius: '50%',
+              backgroundColor: MAIN_LIGHTER,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.5rem',
+              fontSize: '3rem'
+            }}>
+              📋
+            </div>
+            <p style={{ color: '#888', marginBottom: '2rem', fontSize: '1.125rem' }}>
+              주문내역이 없습니다
+            </p>
             <button
               onClick={onBack}
               style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#78350f',
+                padding: '1rem 2rem',
+                backgroundColor: MAIN_COLOR,
                 color: 'white',
                 border: 'none',
-                borderRadius: '0.5rem',
+                borderRadius: '2rem',
                 fontWeight: '600',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                fontSize: '1rem'
               }}
             >
               메뉴 보러가기
@@ -143,10 +178,18 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
                   style={{
                     backgroundColor: 'white',
                     borderRadius: '1rem',
-                    padding: '1.25rem',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    padding: '1.5rem',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                     cursor: 'pointer',
-                    transition: 'box-shadow 0.2s'
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   {/* 상단: 날짜 & 상태 */}
@@ -154,54 +197,56 @@ const OrderHistoryPage = ({ onBack, onOrderDetail }: OrderHistoryPageProps) => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    marginBottom: '0.75rem'
+                    marginBottom: '1rem'
                   }}>
-                    <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                    <span style={{ color: '#888', fontSize: '0.875rem' }}>
                       {formatDate(order.createdAt)}
                     </span>
                     <span style={{
-                      padding: '0.25rem 0.75rem',
+                      padding: '0.375rem 0.875rem',
                       backgroundColor: statusInfo.bg,
                       color: statusInfo.color,
-                      borderRadius: '1rem',
-                      fontSize: '0.75rem',
+                      borderRadius: '2rem',
+                      fontSize: '0.8rem',
                       fontWeight: '600'
                     }}>
                       {statusInfo.text}
                     </span>
                   </div>
 
-                  {/* 중앙: 모든 메뉴 나열 */}
-                  <div style={{ marginBottom: '0.75rem' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                      {items.map((item, index) => (
-                        <p key={index} style={{ 
-                          fontWeight: '500', 
-                          fontSize: '0.95rem',
-                          color: '#374151'
-                        }}>
-                          {getItemName(item)} <span style={{ color: '#9ca3af' }}>× {getItemQuantity(item)}</span>
-                        </p>
-                      ))}
-                    </div>
-                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                      총 {totalQuantity}개 상품
-                    </p>
+                  {/* 중간: 주문 아이템 목록 */}
+                  <div style={{ marginBottom: '1rem' }}>
+                    {items.map((item, idx) => (
+                      <div key={idx} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '0.5rem 0',
+                        borderBottom: idx < items.length - 1 ? '1px solid #F5F5F5' : 'none'
+                      }}>
+                        <span style={{ color: '#1E1E1E' }}>
+                          {getItemName(item)}
+                        </span>
+                        <span style={{ color: '#888', fontSize: '0.9rem' }}>
+                          × {getItemQuantity(item)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
 
-                  {/* 하단: 가격 & 주문번호 */}
+                  {/* 하단: 총 금액 */}
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    paddingTop: '0.75rem',
-                    borderTop: '1px solid #f3f4f6'
+                    paddingTop: '1rem',
+                    borderTop: '1px solid #E0E0E0'
                   }}>
-                    <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
-                      #{order.id.slice(-8).toUpperCase()}
+                    <span style={{ color: '#888', fontSize: '0.9rem' }}>
+                      총 {totalQuantity}개 상품
                     </span>
-                    <span style={{ fontWeight: 'bold', color: '#78350f' }}>
-                      {formatPrice(order.totalPrice || 0)}
+                    <span style={{ fontWeight: '700', color: MAIN_COLOR, fontSize: '1.125rem' }}>
+                      {formatPrice(order.totalPrice)}
                     </span>
                   </div>
                 </div>

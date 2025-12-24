@@ -19,6 +19,11 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
   
   const { addToCart, getTotalItems, getTotalPrice } = useCartStore();
 
+  // 메인 컬러
+  const MAIN_COLOR = '#204031';
+  const MAIN_LIGHT = '#2D5A45';
+  const MAIN_LIGHTER = '#E8F0EC';
+
   // Firestore에서 메뉴 실시간 구독
   useEffect(() => {
     const unsubscribe = subscribeToMenus((menuList) => {
@@ -55,43 +60,58 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
   return (
     <div style={{ 
       minHeight: '100vh', 
-      backgroundColor: '#faf9f7',
-      fontFamily: 'system-ui, sans-serif'
+      backgroundColor: '#F9F9F9',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       {/* 헤더 */}
       <header style={{
         backgroundColor: 'white',
-        padding: '1rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        padding: '1rem 1.5rem',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         position: 'sticky',
         top: 0,
         zIndex: 100
       }}>
         <div style={{
-          maxWidth: '800px',
+          maxWidth: '1200px',
           margin: '0 auto',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* 메인으로 가기 버튼 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* 뒤로가기 */}
             <button
               onClick={onBackToMain}
               style={{
                 background: 'none',
                 border: 'none',
-                fontSize: '1.25rem',
+                fontSize: '1.5rem',
                 cursor: 'pointer',
+                color: MAIN_COLOR,
                 padding: '0.25rem'
               }}
             >
               ←
             </button>
-            <span style={{ fontSize: '1.5rem' }}>☕</span>
-            <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#78350f' }}>
-              카페 오더
-            </span>
+            
+            {/* 로고 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: MAIN_COLOR,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <span style={{ color: 'white', fontSize: '1rem' }}>☕</span>
+              </div>
+              <span style={{ fontSize: '1.25rem', fontWeight: '800', color: MAIN_COLOR }}>
+                ORDER
+              </span>
+            </div>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -99,11 +119,15 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
             <button
               onClick={onOrderHistoryClick}
               style={{
-                padding: '0.5rem',
+                padding: '0.625rem',
                 background: 'none',
-                border: 'none',
+                border: `1px solid #E0E0E0`,
+                borderRadius: '50%',
                 cursor: 'pointer',
-                fontSize: '1.5rem'
+                fontSize: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               title="주문내역"
             >
@@ -115,22 +139,26 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
               onClick={onCartClick}
               style={{
                 position: 'relative',
-                padding: '0.5rem',
+                padding: '0.625rem',
                 background: 'none',
-                border: 'none',
+                border: `1px solid #E0E0E0`,
+                borderRadius: '50%',
                 cursor: 'pointer',
-                fontSize: '1.5rem'
+                fontSize: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               🛒
               {getTotalItems() > 0 && (
                 <span style={{
                   position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  backgroundColor: '#dc2626',
+                  top: '-4px',
+                  right: '-4px',
+                  backgroundColor: MAIN_COLOR,
                   color: 'white',
-                  fontSize: '0.75rem',
+                  fontSize: '0.7rem',
                   fontWeight: 'bold',
                   width: '20px',
                   height: '20px',
@@ -151,14 +179,19 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
                   <img
                     src={user.photoURL}
                     alt="프로필"
-                    style={{ width: '32px', height: '32px', borderRadius: '50%' }}
+                    style={{ 
+                      width: '36px', 
+                      height: '36px', 
+                      borderRadius: '50%',
+                      border: `2px solid ${MAIN_LIGHTER}`
+                    }}
                   />
                 ) : (
-                  <span style={{
-                    width: '32px',
-                    height: '32px',
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
                     borderRadius: '50%',
-                    backgroundColor: '#78350f',
+                    backgroundColor: MAIN_COLOR,
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
@@ -167,17 +200,19 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
                     fontSize: '0.875rem'
                   }}>
                     {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
-                  </span>
+                  </div>
                 )}
                 <button
                   onClick={handleLogout}
                   style={{
                     padding: '0.5rem 1rem',
-                    backgroundColor: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '0.5rem',
-                    fontSize: '0.875rem',
-                    cursor: 'pointer'
+                    backgroundColor: 'transparent',
+                    border: '1px solid #E0E0E0',
+                    borderRadius: '2rem',
+                    fontSize: '0.8rem',
+                    color: '#666',
+                    cursor: 'pointer',
+                    fontWeight: '500'
                   }}
                 >
                   로그아웃
@@ -189,30 +224,38 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
       </header>
 
       {/* 메인 컨텐츠 */}
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem 1rem', paddingBottom: '6rem' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-          메뉴
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem', paddingBottom: '7rem' }}>
+        <h1 style={{ 
+          fontSize: '1.75rem', 
+          fontWeight: '700', 
+          marginBottom: '1.5rem',
+          color: '#1E1E1E'
+        }}>
+          Menu
         </h1>
 
         {/* 카테고리 탭 */}
         <div style={{
           display: 'flex',
-          gap: '0.5rem',
+          gap: '0.75rem',
           overflowX: 'auto',
           paddingBottom: '1rem',
-          marginBottom: '1rem'
+          marginBottom: '1.5rem',
+          borderBottom: '1px solid #E0E0E0'
         }}>
           <button
             onClick={() => setSelectedCategory('all')}
             style={{
-              padding: '0.5rem 1rem',
+              padding: '0.75rem 1.25rem',
               borderRadius: '2rem',
               border: 'none',
-              backgroundColor: selectedCategory === 'all' ? '#78350f' : '#f3f4f6',
-              color: selectedCategory === 'all' ? 'white' : '#4b5563',
-              fontWeight: '500',
+              backgroundColor: selectedCategory === 'all' ? MAIN_COLOR : 'white',
+              color: selectedCategory === 'all' ? 'white' : '#666',
+              fontWeight: '600',
               cursor: 'pointer',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease',
+              boxShadow: selectedCategory === 'all' ? 'none' : '0 1px 3px rgba(0,0,0,0.08)'
             }}
           >
             전체
@@ -222,14 +265,16 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
               style={{
-                padding: '0.5rem 1rem',
+                padding: '0.75rem 1.25rem',
                 borderRadius: '2rem',
                 border: 'none',
-                backgroundColor: selectedCategory === category.id ? '#78350f' : '#f3f4f6',
-                color: selectedCategory === category.id ? 'white' : '#4b5563',
-                fontWeight: '500',
+                backgroundColor: selectedCategory === category.id ? MAIN_COLOR : 'white',
+                color: selectedCategory === category.id ? 'white' : '#666',
+                fontWeight: '600',
                 cursor: 'pointer',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease',
+                boxShadow: selectedCategory === category.id ? 'none' : '0 1px 3px rgba(0,0,0,0.08)'
               }}
             >
               {category.icon} {category.name}
@@ -239,24 +284,30 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
 
         {/* 로딩 */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <p>메뉴를 불러오는 중...</p>
+          <div style={{ textAlign: 'center', padding: '4rem' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              border: `3px solid ${MAIN_LIGHTER}`,
+              borderTopColor: MAIN_COLOR,
+              borderRadius: '50%',
+              margin: '0 auto',
+              animation: 'spin 1s linear infinite'
+            }} />
+            <p style={{ marginTop: '1rem', color: '#888' }}>메뉴를 불러오는 중...</p>
           </div>
         ) : filteredMenus.length === 0 ? (
           /* 메뉴 없음 */
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</p>
-            <p style={{ color: '#6b7280' }}>등록된 메뉴가 없습니다</p>
-            <p style={{ color: '#9ca3af', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-              Firestore에 메뉴 데이터를 추가해주세요
-            </p>
+          <div style={{ textAlign: 'center', padding: '4rem' }}>
+            <p style={{ fontSize: '4rem', marginBottom: '1rem' }}>📭</p>
+            <p style={{ color: '#888', fontSize: '1.125rem' }}>등록된 메뉴가 없습니다</p>
           </div>
         ) : (
           /* 메뉴 목록 */
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '1rem'
+            gap: '1.25rem'
           }}>
             {filteredMenus.map((menu) => (
               <div
@@ -264,22 +315,19 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
                 style={{
                   backgroundColor: 'white',
                   borderRadius: '1rem',
-                  padding: '1rem',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  display: 'flex',
-                  gap: '1rem'
+                  overflow: 'hidden',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  transition: 'all 0.2s ease'
                 }}
               >
                 {/* 메뉴 이미지 */}
                 <div style={{
-                  width: '80px',
-                  height: '80px',
-                  backgroundColor: '#fef3c7',
-                  borderRadius: '0.75rem',
+                  height: '160px',
+                  backgroundColor: MAIN_LIGHTER,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  flexShrink: 0
+                  position: 'relative'
                 }}>
                   {menu.imageUrl ? (
                     <img
@@ -288,27 +336,55 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
                       style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover',
-                        borderRadius: '0.75rem'
+                        objectFit: 'cover'
                       }}
                     />
                   ) : (
-                    <span style={{ fontSize: '2rem' }}>
+                    <span style={{ fontSize: '4rem' }}>
                       {CATEGORIES.find((c) => c.id === menu.category)?.icon || '☕'}
                     </span>
+                  )}
+                  
+                  {!menu.isAvailable && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: '700',
+                      fontSize: '1.25rem'
+                    }}>
+                      SOLD OUT
+                    </div>
                   )}
                 </div>
 
                 {/* 메뉴 정보 */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <h3 style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
+                <div style={{ padding: '1.25rem' }}>
+                  <p style={{
+                    fontSize: '0.75rem',
+                    color: MAIN_COLOR,
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    {CATEGORIES.find((c) => c.id === menu.category)?.name}
+                  </p>
+                  <h3 style={{ fontWeight: '600', marginBottom: '0.25rem', color: '#1E1E1E' }}>
                     {menu.name}
                   </h3>
                   <p style={{
                     fontSize: '0.875rem',
-                    color: '#6b7280',
-                    marginBottom: '0.5rem',
-                    flex: 1
+                    color: '#888',
+                    marginBottom: '1rem',
+                    lineHeight: 1.4
                   }}>
                     {menu.description}
                   </p>
@@ -317,24 +393,24 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
                     justifyContent: 'space-between',
                     alignItems: 'center'
                   }}>
-                    <span style={{ fontWeight: 'bold', color: '#b45309' }}>
+                    <span style={{ fontWeight: '700', color: MAIN_COLOR, fontSize: '1.125rem' }}>
                       {formatPrice(menu.price)}
                     </span>
                     <button
                       onClick={() => handleAddToCart(menu)}
                       disabled={!menu.isAvailable}
                       style={{
-                        padding: '0.5rem 1rem',
+                        padding: '0.625rem 1.25rem',
                         backgroundColor: addedItem === menu.id 
-                          ? '#16a34a' 
-                          : menu.isAvailable ? '#78350f' : '#d1d5db',
+                          ? '#4CAF50' 
+                          : menu.isAvailable ? MAIN_COLOR : '#E0E0E0',
                         color: 'white',
                         border: 'none',
-                        borderRadius: '0.5rem',
-                        fontWeight: '500',
+                        borderRadius: '2rem',
+                        fontWeight: '600',
                         cursor: menu.isAvailable ? 'pointer' : 'not-allowed',
                         fontSize: '0.875rem',
-                        transition: 'background-color 0.2s'
+                        transition: 'all 0.2s ease'
                       }}
                     >
                       {addedItem === menu.id ? '✓ 담김' : menu.isAvailable ? '담기' : '품절'}
@@ -354,39 +430,50 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: '#78350f',
+          backgroundColor: MAIN_COLOR,
           color: 'white',
-          padding: '1rem',
-          boxShadow: '0 -4px 6px rgba(0,0,0,0.1)'
+          padding: '1rem 1.5rem',
+          boxShadow: '0 -4px 12px rgba(0,0,0,0.15)'
         }}>
           <div style={{
-            maxWidth: '800px',
+            maxWidth: '1200px',
             margin: '0 auto',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
             <div>
-              <span style={{ fontWeight: '600' }}>🛒 {getTotalItems()}개 상품</span>
-              <span style={{ marginLeft: '1rem' }}>{formatPrice(getTotalPrice())}</span>
+              <span style={{ fontWeight: '600', fontSize: '1rem' }}>
+                🛒 {getTotalItems()}개 상품
+              </span>
+              <span style={{ marginLeft: '1rem', fontSize: '1.125rem', fontWeight: '700' }}>
+                {formatPrice(getTotalPrice())}
+              </span>
             </div>
             <button 
               onClick={onCartClick}
               style={{
-                padding: '0.75rem 1.5rem',
+                padding: '0.875rem 2rem',
                 backgroundColor: 'white',
-                color: '#78350f',
+                color: MAIN_COLOR,
                 border: 'none',
-                borderRadius: '0.5rem',
-                fontWeight: 'bold',
-                cursor: 'pointer'
+                borderRadius: '2rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                fontSize: '1rem'
               }}
             >
-              장바구니 보기
+              주문하기
             </button>
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

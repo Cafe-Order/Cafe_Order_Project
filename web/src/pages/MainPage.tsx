@@ -13,14 +13,19 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
-  // 배너 데이터 (앱 스타일)
+  // 메인 컬러
+  const MAIN_COLOR = '#204031';
+  const MAIN_LIGHT = '#2D5A45';
+  const MAIN_LIGHTER = '#E8F0EC';
+
+  // 배너 데이터
   const banners = [
     {
       id: 1,
       title: '2024 WINTER',
       title2: 'e-FREQUENCY',
       subtitle: '[행사 기간] 12/01(일) ~ 12/31(화)',
-      bg: 'linear-gradient(to right, #2E7D32 0%, #4CAF50 50%, #81C784 100%)',
+      bg: `linear-gradient(135deg, ${MAIN_COLOR} 0%, ${MAIN_LIGHT} 100%)`,
       icon: '❄️',
     },
     {
@@ -28,7 +33,7 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
       title: '크리스마스 시즌',
       title2: '스페셜 음료',
       subtitle: '달콤한 연말의 시작',
-      bg: 'linear-gradient(to right, #C62828 0%, #E53935 50%, #EF9A9A 100%)',
+      bg: 'linear-gradient(135deg, #1E3932 0%, #00704A 100%)',
       icon: '🎁',
     },
     {
@@ -36,7 +41,7 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
       title: '신규 회원',
       title2: '첫 주문 할인',
       subtitle: '아메리카노 50% 할인',
-      bg: 'linear-gradient(to right, #5D4037 0%, #795548 50%, #A1887F 100%)',
+      bg: `linear-gradient(135deg, #1E3932 0%, ${MAIN_COLOR} 100%)`,
       icon: '🏷️',
     },
   ];
@@ -75,42 +80,46 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#faf9f7',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
+      backgroundColor: '#F9F9F9',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       overflowX: 'hidden'
     }}>
       {/* 헤더 */}
       <header style={{
         backgroundColor: 'white',
-        padding: '0.75rem 1rem',
+        padding: '1rem 1.5rem',
         boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         position: 'sticky',
         top: 0,
         zIndex: 100
       }}>
         <div style={{
-          maxWidth: '1000px',
+          maxWidth: '1200px',
           margin: '0 auto',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
           {/* 로고 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5D4037" strokeWidth="2">
-              <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-              <line x1="6" y1="2" x2="6" y2="4" />
-              <line x1="10" y1="2" x2="10" y2="4" />
-              <line x1="14" y1="2" x2="14" y2="4" />
-            </svg>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: MAIN_COLOR,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <span style={{ color: 'white', fontSize: '1.25rem' }}>☕</span>
+            </div>
             <span style={{ 
-              fontSize: '1.25rem', 
-              fontWeight: '700', 
-              color: '#5D4037',
+              fontSize: '1.5rem', 
+              fontWeight: '800', 
+              color: MAIN_COLOR,
               letterSpacing: '-0.02em'
             }}>
-              Cafe Order
+              CAFE ORDER
             </span>
           </div>
 
@@ -123,32 +132,26 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                padding: '0.625rem 1.25rem',
-                background: 'linear-gradient(135deg, #5D4037 0%, #4E342E 100%)',
+                padding: '0.75rem 1.5rem',
+                backgroundColor: MAIN_COLOR,
                 color: 'white',
                 border: 'none',
                 borderRadius: '2rem',
-                fontSize: '0.9rem',
+                fontSize: '0.95rem',
                 fontWeight: '600',
                 cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(93, 64, 55, 0.3)',
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(93, 64, 55, 0.4)';
+                e.currentTarget.style.backgroundColor = MAIN_LIGHT;
+                e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = MAIN_COLOR;
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(93, 64, 55, 0.3)';
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
-              주문하기
+              Order Now
             </button>
 
             {user ? (
@@ -158,37 +161,37 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
                     src={user.photoURL}
                     alt="프로필"
                     style={{ 
-                      width: '36px', 
-                      height: '36px', 
+                      width: '40px', 
+                      height: '40px', 
                       borderRadius: '50%',
-                      border: '2px solid #E8E0DB'
+                      border: `2px solid ${MAIN_LIGHTER}`
                     }}
                   />
                 ) : (
-                  <span style={{
-                    width: '36px',
-                    height: '36px',
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
                     borderRadius: '50%',
-                    backgroundColor: '#5D4037',
+                    backgroundColor: MAIN_COLOR,
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 'bold',
-                    fontSize: '0.875rem'
+                    fontSize: '1rem'
                   }}>
                     {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
-                  </span>
+                  </div>
                 )}
                 <button
                   onClick={handleLogout}
                   style={{
                     padding: '0.5rem 1rem',
                     backgroundColor: 'transparent',
-                    border: '1px solid #D7CCC8',
-                    borderRadius: '0.5rem',
+                    border: `1px solid #ddd`,
+                    borderRadius: '2rem',
                     fontSize: '0.875rem',
-                    color: '#5D4037',
+                    color: '#666',
                     cursor: 'pointer',
                     fontWeight: '500'
                   }}
@@ -200,135 +203,129 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
               <button
                 onClick={onLoginClick}
                 style={{
-                  padding: '0.625rem 1.25rem',
+                  padding: '0.75rem 1.5rem',
                   backgroundColor: 'transparent',
-                  border: '1.5px solid #5D4037',
-                  color: '#5D4037',
+                  border: `2px solid ${MAIN_COLOR}`,
+                  color: MAIN_COLOR,
                   borderRadius: '2rem',
-                  fontSize: '0.9rem',
+                  fontSize: '0.95rem',
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#5D4037';
+                  e.currentTarget.style.backgroundColor = MAIN_COLOR;
                   e.currentTarget.style.color = 'white';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = '#5D4037';
+                  e.currentTarget.style.color = MAIN_COLOR;
                 }}
               >
-                로그인
+                Sign In
               </button>
             )}
           </nav>
         </div>
       </header>
 
-      {/* 히어로 섹션 - 앱 스타일 배너 */}
+      {/* 배너 섹션 */}
       <section style={{
-        background: banners[currentBanner].bg,
-        padding: '2.5rem 1rem',
-        position: 'relative',
-        minHeight: '200px',
-        display: 'flex',
-        alignItems: 'center',
-        width: '100vw',
-        marginLeft: 'calc(50% - 50vw)',
-        marginRight: 'calc(50% - 50vw)',
-        borderRadius: '1rem',
-        margin: '1rem auto',
-        maxWidth: '1000px',
-        overflow: 'hidden',
-        transition: 'background 0.5s ease'
+        maxWidth: '1200px',
+        margin: '1.5rem auto',
+        padding: '0 1.5rem'
       }}>
-        {/* 컨텐츠 */}
         <div style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0 2rem',
+          background: banners[currentBanner].bg,
+          padding: '3rem 2.5rem',
+          borderRadius: '1.5rem',
           position: 'relative',
-          zIndex: 1
-        }}>
-          {/* 텍스트 영역 */}
-          <div style={{ color: 'white' }}>
-            {/* 타이틀 1 */}
-            <h1 style={{ 
-              fontSize: '1.75rem', 
-              fontWeight: '700',
-              marginBottom: '0.25rem',
-              letterSpacing: '-0.01em',
-              lineHeight: 1.2
-            }}>
-              {banners[currentBanner].title}
-            </h1>
-            
-            {/* 타이틀 2 */}
-            <h2 style={{ 
-              fontSize: '1.75rem', 
-              fontWeight: '700',
-              marginBottom: '0.75rem',
-              letterSpacing: '-0.01em',
-              lineHeight: 1.2
-            }}>
-              {banners[currentBanner].title2}
-            </h2>
-
-            {/* 서브타이틀 */}
-            <p style={{ 
-              fontSize: '0.9rem',
-              opacity: 0.9,
-              fontWeight: '400'
-            }}>
-              {banners[currentBanner].subtitle}
-            </p>
-          </div>
-
-          {/* 아이콘 영역 */}
-          <div style={{
-            fontSize: '5rem',
-            opacity: 0.3
-          }}>
-            {banners[currentBanner].icon}
-          </div>
-        </div>
-
-        {/* 배너 인디케이터 */}
-        <div style={{
-          position: 'absolute',
-          bottom: '1rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          overflow: 'hidden',
+          transition: 'background 0.5s ease',
+          minHeight: '220px',
           display: 'flex',
-          gap: '0.5rem',
-          zIndex: 2
+          alignItems: 'center'
         }}>
-          {banners.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentBanner(index)}
-              style={{
-                width: index === currentBanner ? '1.5rem' : '0.5rem',
-                height: '0.5rem',
-                borderRadius: '1rem',
-                border: 'none',
-                backgroundColor: index === currentBanner ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            />
-          ))}
+          {/* 컨텐츠 */}
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            {/* 텍스트 영역 */}
+            <div style={{ color: 'white' }}>
+              <h1 style={{ 
+                fontSize: '2rem', 
+                fontWeight: '800',
+                marginBottom: '0.25rem',
+                letterSpacing: '-0.01em',
+                lineHeight: 1.2
+              }}>
+                {banners[currentBanner].title}
+              </h1>
+              
+              <h2 style={{ 
+                fontSize: '2rem', 
+                fontWeight: '800',
+                marginBottom: '1rem',
+                letterSpacing: '-0.01em',
+                lineHeight: 1.2
+              }}>
+                {banners[currentBanner].title2}
+              </h2>
+
+              <p style={{ 
+                fontSize: '1rem',
+                opacity: 0.9,
+                fontWeight: '400'
+              }}>
+                {banners[currentBanner].subtitle}
+              </p>
+            </div>
+
+            {/* 아이콘 영역 */}
+            <div style={{
+              fontSize: '5rem',
+              opacity: 0.3
+            }}>
+              {banners[currentBanner].icon}
+            </div>
+          </div>
+
+          {/* 배너 인디케이터 */}
+          <div style={{
+            position: 'absolute',
+            bottom: '1.25rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: '0.5rem'
+          }}>
+            {banners.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentBanner(index)}
+                style={{
+                  width: index === currentBanner ? '1.75rem' : '0.5rem',
+                  height: '0.5rem',
+                  borderRadius: '1rem',
+                  border: 'none',
+                  backgroundColor: index === currentBanner ? 'white' : 'rgba(255,255,255,0.4)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* 추천 메뉴 섹션 */}
       <section style={{
-        maxWidth: '1000px',
+        maxWidth: '1200px',
         margin: '0 auto',
-        padding: '3rem 1rem'
+        padding: '2rem 1.5rem'
       }}>
         <div style={{
           display: 'flex',
@@ -337,9 +334,9 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
           marginBottom: '1.5rem'
         }}>
           <h2 style={{ 
-            fontSize: '1.375rem', 
+            fontSize: '1.5rem', 
             fontWeight: '700', 
-            color: '#3E2723',
+            color: '#1E1E1E',
             letterSpacing: '-0.02em'
           }}>
             추천 메뉴
@@ -349,12 +346,13 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
             style={{
               background: 'none',
               border: 'none',
-              color: '#8D6E63',
+              color: MAIN_COLOR,
               fontWeight: '600',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.25rem'
+              gap: '0.25rem',
+              fontSize: '0.95rem'
             }}
           >
             전체보기
@@ -365,14 +363,14 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
         </div>
 
         {recommendedMenus.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#8D6E63' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
             <p>메뉴를 불러오는 중...</p>
           </div>
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-            gap: '1.25rem'
+            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+            gap: '1.5rem'
           }}>
             {recommendedMenus.map((menu) => (
               <div
@@ -382,24 +380,23 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
                   backgroundColor: 'white',
                   borderRadius: '1rem',
                   overflow: 'hidden',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  border: '1px solid #F5F0ED'
+                  transition: 'all 0.25s ease',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.transform = 'translateY(-6px)';
+                  e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.12)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
                 }}
               >
                 {/* 메뉴 이미지 */}
                 <div style={{
-                  height: '150px',
-                  backgroundColor: '#F5F0ED',
+                  height: '180px',
+                  backgroundColor: MAIN_LIGHTER,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
@@ -411,19 +408,19 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   ) : (
-                    <span style={{ fontSize: '3.5rem' }}>
+                    <span style={{ fontSize: '4rem' }}>
                       {CATEGORIES.find((c) => c.id === menu.category)?.icon || '☕'}
                     </span>
                   )}
                 </div>
 
                 {/* 메뉴 정보 */}
-                <div style={{ padding: '1rem' }}>
+                <div style={{ padding: '1.25rem' }}>
                   <p style={{ 
                     fontSize: '0.75rem', 
-                    color: '#8D6E63', 
+                    color: MAIN_COLOR, 
                     fontWeight: '600', 
-                    marginBottom: '0.375rem',
+                    marginBottom: '0.5rem',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
@@ -431,15 +428,15 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
                   </p>
                   <h3 style={{ 
                     fontWeight: '600', 
-                    fontSize: '1rem', 
+                    fontSize: '1.125rem', 
                     marginBottom: '0.5rem',
-                    color: '#3E2723'
+                    color: '#1E1E1E'
                   }}>
                     {menu.name}
                   </h3>
                   <p style={{ 
                     fontWeight: '700', 
-                    color: '#5D4037', 
+                    color: MAIN_COLOR, 
                     fontSize: '1.125rem' 
                   }}>
                     {formatPrice(menu.price)}
@@ -453,16 +450,17 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
 
       {/* 카테고리 섹션 */}
       <section style={{
-        backgroundColor: '#F5F0ED',
-        padding: '3rem 1rem'
+        backgroundColor: MAIN_LIGHTER,
+        padding: '3rem 1.5rem',
+        marginTop: '1rem'
       }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h2 style={{ 
-            fontSize: '1.375rem', 
+            fontSize: '1.5rem', 
             fontWeight: '700', 
             marginBottom: '1.5rem', 
             textAlign: 'center',
-            color: '#3E2723'
+            color: '#1E1E1E'
           }}>
             카테고리
           </h2>
@@ -479,25 +477,25 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
                   backgroundColor: 'white',
                   border: 'none',
                   borderRadius: '1rem',
-                  padding: '1.5rem 1rem',
+                  padding: '2rem 1rem',
                   cursor: 'pointer',
                   textAlign: 'center',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.03)';
-                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
                 }}
               >
-                <span style={{ fontSize: '2.25rem', display: 'block', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.75rem' }}>
                   {category.icon}
                 </span>
-                <span style={{ fontWeight: '600', color: '#5D4037', fontSize: '0.9rem' }}>
+                <span style={{ fontWeight: '600', color: MAIN_COLOR, fontSize: '1rem' }}>
                   {category.name}
                 </span>
               </button>
@@ -508,26 +506,33 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
 
       {/* 푸터 */}
       <footer style={{
-        backgroundColor: '#3E2723',
+        backgroundColor: MAIN_COLOR,
         color: 'white',
-        padding: '2rem 1rem',
+        padding: '2.5rem 1.5rem',
         textAlign: 'center'
       }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            gap: '0.5rem', 
-            marginBottom: '0.75rem' 
+            gap: '0.75rem', 
+            marginBottom: '1rem' 
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-            </svg>
-            <span style={{ fontSize: '1.125rem', fontWeight: '600' }}>Cafe Order</span>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <span style={{ fontSize: '1.25rem' }}>☕</span>
+            </div>
+            <span style={{ fontSize: '1.25rem', fontWeight: '700' }}>CAFE ORDER</span>
           </div>
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem' }}>
             © 2024 Cafe Order. All rights reserved.
           </p>
         </div>
