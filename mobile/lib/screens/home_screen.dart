@@ -178,6 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverToBoxAdapter(child: _buildRecommendSection()),
             // 이벤트 카드
             SliverToBoxAdapter(child: _buildEventCard()),
+            // 스탬프 이벤트 카드
+            SliverToBoxAdapter(child: _buildStampEventCard()),
             // 하단 여백
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
           ],
@@ -592,6 +594,102 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.local_cafe,
               size: 40,
               color: Color(0xFF6F4E37),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStampEventCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00704A),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'STAMP',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  '스탬프 10개 적립 시\n음료 1잔 무료!',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: List.generate(10, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Icon(
+                        index < 3 ? Icons.coffee : Icons.coffee_outlined,
+                        size: 18,
+                        color: index < 3
+                            ? const Color(0xFF00704A)
+                            : Colors.grey[300],
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8F5E9),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '3',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00704A),
+                  ),
+                ),
+                Text(
+                  '/ 10',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF00704A)),
+                ),
+              ],
             ),
           ),
         ],
