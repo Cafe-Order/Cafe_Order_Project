@@ -1,28 +1,30 @@
 import { useEffect, useState } from 'react';
-import { Order } from '../types';
 import { subscribeToOrder } from '../services/orderService';
+import { Order } from '../types';
 
 interface OrderCompletePageProps {
   orderId: string;
-  onBackToMenu: () => void;
+  onGoHome: () => void;
 }
 
 // 주문 상태 한글 변환
-const STATUS_MAP: Record<string, { text: string; color: string; bg: string }> = {
-  pending: { text: '주문 접수 중', color: '#ca8a04', bg: '#fef9c3' },
-  confirmed: { text: '주문 확인', color: '#2563eb', bg: '#dbeafe' },
-  preparing: { text: '준비 중', color: '#ea580c', bg: '#ffedd5' },
-  ready: { text: '준비 완료', color: '#16a34a', bg: '#dcfce7' },
-  completed: { text: '수령 완료', color: '#6b7280', bg: '#f3f4f6' },
-  cancelled: { text: '주문 취소', color: '#dc2626', bg: '#fee2e2' },
+const STATUS_INFO: Record<string, { text: string; color: string; bgColor: string }> = {
+  pending: { text: '주문 접수 중', color: '#ca8a04', bgColor: '#fef9c3' },
+  confirmed: { text: '주문 확인됨', color: '#2563eb', bgColor: '#dbeafe' },
+  preparing: { text: '준비 중', color: '#ea580c', bgColor: '#ffedd5' },
+  ready: { text: '준비 완료', color: '#16a34a', bgColor: '#dcfce7' },
+  completed: { text: '수령 완료', color: '#6b7280', bgColor: '#f3f4f6' },
+  cancelled: { text: '주문 취소', color: '#dc2626', bgColor: '#fee2e2' },
 };
 
-const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) => {
+const OrderCompletePage = ({ orderId, onGoHome }: OrderCompletePageProps) => {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
   // 주문 실시간 구독
   useEffect(() => {
+    if (!orderId) return;
+
     const unsubscribe = subscribeToOrder(orderId, (orderData) => {
       setOrder(orderData);
       setLoading(false);
@@ -34,6 +36,11 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
   // 가격 포맷
   const formatPrice = (price: number) => {
     return price.toLocaleString('ko-KR') + '원';
+  };
+
+  // 주문번호 포맷 (앞 8자리만)
+  const formatOrderId = (id: string) => {
+    return id.slice(0, 8).toUpperCase();
   };
 
   if (loading) {
@@ -59,12 +66,12 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#faf9f7',
-        padding: '1rem'
+        padding: '2rem'
       }}>
         <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>❌</p>
         <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>주문을 찾을 수 없습니다</p>
         <button
-          onClick={onBackToMenu}
+          onClick={onGoHome}
           style={{
             padding: '0.75rem 1.5rem',
             backgroundColor: '#78350f',
@@ -81,7 +88,7 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
     );
   }
 
-  const statusInfo = STATUS_MAP[order.status] || STATUS_MAP.pending;
+  const statusInfo = STATUS_INFO[order.status] || STATUS_INFO.pending;
 
   return (
     <div style={{
@@ -116,7 +123,7 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
             주문이 완료되었습니다!
           </h2>
           <p style={{ color: '#6b7280' }}>
-            주문번호: {orderId.slice(-8).toUpperCase()}
+            주문번호: <strong>{formatOrderId(orderId)}</strong>
           </p>
         </div>
 
@@ -133,7 +140,7 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
           <span style={{
             display: 'inline-block',
             padding: '0.5rem 1.5rem',
-            backgroundColor: statusInfo.bg,
+            backgroundColor: statusInfo.bgColor,
             color: statusInfo.color,
             borderRadius: '2rem',
             fontWeight: '600',
@@ -141,7 +148,11 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
           }}>
             {statusInfo.text}
           </span>
-          <p style={{ color: '#9ca3af', fontSize: '0.875rem', marginTop: '1rem' }}>
+          <p style={{ 
+            color: '#9ca3af', 
+            fontSize: '0.875rem', 
+            marginTop: '1rem' 
+          }}>
             상태가 실시간으로 업데이트됩니다
           </p>
         </div>
@@ -164,7 +175,7 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   paddingBottom: '0.75rem',
-                  borderBottom: '1px solid #f3f4f6'
+                  borderBottom: index < order.items.length - 1 ? '1px solid #f3f4f6' : 'none'
                 }}
               >
                 <div>
@@ -179,8 +190,8 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
               </div>
             ))}
           </div>
-          <hr style={{ margin: '1rem 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.125rem', fontWeight: 'bold' }}>
+          <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '1rem 0' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.125rem' }}>
             <span>총 결제 금액</span>
             <span style={{ color: '#78350f' }}>{formatPrice(order.totalPrice)}</span>
           </div>
@@ -205,7 +216,7 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
         {/* 버튼 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <button
-            onClick={onBackToMenu}
+            onClick={onGoHome}
             style={{
               width: '100%',
               padding: '1rem',
@@ -213,15 +224,15 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
               color: 'white',
               border: 'none',
               borderRadius: '0.75rem',
-              fontSize: '1rem',
-              fontWeight: '600',
+              fontSize: '1.125rem',
+              fontWeight: 'bold',
               cursor: 'pointer'
             }}
           >
             추가 주문하기
           </button>
           <button
-            onClick={onBackToMenu}
+            onClick={onGoHome}
             style={{
               width: '100%',
               padding: '1rem',
@@ -230,7 +241,7 @@ const OrderCompletePage = ({ orderId, onBackToMenu }: OrderCompletePageProps) =>
               border: 'none',
               borderRadius: '0.75rem',
               fontSize: '1rem',
-              fontWeight: '600',
+              fontWeight: '500',
               cursor: 'pointer'
             }}
           >

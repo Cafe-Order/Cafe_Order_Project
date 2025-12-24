@@ -86,7 +86,7 @@ const OrderPage = ({ onBack, onOrderComplete }: OrderPageProps) => {
       {/* 메인 컨텐츠 */}
       <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem 1rem', paddingBottom: '8rem' }}>
         
-        {/* 주문 내역 */}
+        {/* 주문 아이템 목록 */}
         <div style={{
           backgroundColor: 'white',
           borderRadius: '1rem',
@@ -95,7 +95,7 @@ const OrderPage = ({ onBack, onOrderComplete }: OrderPageProps) => {
           marginBottom: '1rem'
         }}>
           <h2 style={{ fontWeight: '600', marginBottom: '1rem' }}>주문 내역</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {items.map((item) => (
               <div
                 key={item.menuItem.id}
@@ -103,12 +103,12 @@ const OrderPage = ({ onBack, onOrderComplete }: OrderPageProps) => {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  paddingBottom: '0.75rem',
+                  paddingBottom: '1rem',
                   borderBottom: '1px solid #f3f4f6'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '1.25rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>
                     {CATEGORIES.find((c) => c.id === item.menuItem.category)?.icon || '☕'}
                   </span>
                   <div>
@@ -160,7 +160,7 @@ const OrderPage = ({ onBack, onOrderComplete }: OrderPageProps) => {
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
         }}>
           <h2 style={{ fontWeight: '600', marginBottom: '1rem' }}>결제 정보</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#6b7280' }}>
               <span>상품 금액</span>
               <span>{formatPrice(getTotalPrice())}</span>
@@ -169,7 +169,7 @@ const OrderPage = ({ onBack, onOrderComplete }: OrderPageProps) => {
               <span>할인</span>
               <span>0원</span>
             </div>
-            <hr style={{ margin: '0.5rem 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
+            <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '0.5rem 0' }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.125rem', fontWeight: 'bold' }}>
               <span>총 결제 금액</span>
               <span style={{ color: '#78350f' }}>{formatPrice(getTotalPrice())}</span>
@@ -178,7 +178,7 @@ const OrderPage = ({ onBack, onOrderComplete }: OrderPageProps) => {
         </div>
       </main>
 
-      {/* 하단 주문 버튼 */}
+      {/* 하단 결제 버튼 */}
       <div style={{
         position: 'fixed',
         bottom: 0,
