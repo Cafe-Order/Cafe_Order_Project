@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'cart_screen.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -11,15 +11,6 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  final List<Map<String, dynamic>> menuItems = [
-    {'name': '아메리카노', 'price': 4500, 'image': Icons.coffee},
-    {'name': '카페라떼', 'price': 5000, 'image': Icons.coffee_maker},
-    {'name': '바닐라라떼', 'price': 5500, 'image': Icons.local_cafe},
-    {'name': '카푸치노', 'price': 5000, 'image': Icons.emoji_food_beverage},
-    {'name': '카라멜마끼아또', 'price': 5500, 'image': Icons.coffee},
-    {'name': '초코라떼', 'price': 5500, 'image': Icons.local_drink},
-  ];
-
   final List<Map<String, dynamic>> cart = [];
 
   void _addToCart(Map<String, dynamic> item) {
@@ -28,12 +19,7 @@ class _MenuScreenState extends State<MenuScreen> {
       if (existingIndex >= 0) {
         cart[existingIndex]['quantity']++;
       } else {
-        cart.add({
-          'name': item['name'],
-          'price': item['price'],
-          'image': item['image'],
-          'quantity': 1,
-        });
+        cart.add({'name': item['name'], 'price': item['price'], 'quantity': 1});
       }
     });
     ScaffoldMessenger.of(
@@ -111,58 +97,85 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: menuItems.length,
-              itemBuilder: (context, index) {
-                final item = menuItems[index];
-                return Card(
-                  elevation: 4,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        item['image'],
-                        size: 50,
-                        color: const Color(0xFF6F4E37),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        item['name'],
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${item['price']}원',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: () => _addToCart(item),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6F4E37),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                        ),
-                        child: const Text('담기'),
-                      ),
-                    ],
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('menus')
+                  .where('isAvailable', isEqualTo: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('에러: ${snapshot.error}'));
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('메뉴가 없습니다'));
+                }
+
+                final menuItems = snapshot.data!.docs;
+
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
                   ),
+                  itemCount: menuItems.length,
+                  itemBuilder: (context, index) {
+                    final item =
+                        menuItems[index].data() as Map<String, dynamic>;
+                    return Card(
+                      elevation: 4,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.coffee,
+                            size: 50,
+                            color: Color(0xFF6F4E37),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            item['name'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${item['price']}원',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () => _addToCart({
+                              'name': item['name'],
+                              'price': item['price'],
+                            }),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6F4E37),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                            ),
+                            child: const Text('담기'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 );
               },
             ),
