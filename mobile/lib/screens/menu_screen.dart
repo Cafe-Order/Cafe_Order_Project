@@ -10,8 +10,29 @@ class MenuScreen extends StatefulWidget {
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
+class _MenuScreenState extends State<MenuScreen>
+    with SingleTickerProviderStateMixin {
   final List<Map<String, dynamic>> cart = [];
+  late TabController _tabController;
+  final List<String> categories = ['전체', 'coffee', 'beverage', 'bakery'];
+  final Map<String, String> categoryNames = {
+    '전체': '전체',
+    'coffee': '커피',
+    'beverage': '음료',
+    'bakery': '베이커리',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: categories.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _addToCart(Map<String, dynamic> item) {
     setState(() {
@@ -29,6 +50,105 @@ class _MenuScreenState extends State<MenuScreen> {
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  Widget _buildMenuGrid(String category) {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('menus')
+        .where('isAvailable', isEqualTo: true);
+
+    if (category != '전체') {
+      query = query.where('category', isEqualTo: category);
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: query.snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('에러: ${snapshot.error}'));
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('메뉴가 없습니다'));
+        }
+
+        final menuItems = snapshot.data!.docs;
+
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.75,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
+          itemCount: menuItems.length,
+          itemBuilder: (context, index) {
+            final item = menuItems[index].data() as Map<String, dynamic>;
+            return Card(
+              elevation: 4,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _getCategoryIcon(item['category']),
+                    size: 50,
+                    color: const Color(0xFF6F4E37),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    item['name'] ?? '',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${item['price']}원',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () => _addToCart({
+                      'name': item['name'],
+                      'price': item['price'],
+                    }),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6F4E37),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: const Text('담기'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  IconData _getCategoryIcon(String? category) {
+    switch (category) {
+      case 'coffee':
+        return Icons.coffee;
+      case 'beverage':
+        return Icons.local_drink;
+      case 'bakery':
+        return Icons.bakery_dining;
+      default:
+        return Icons.restaurant;
+    }
   }
 
   @override
@@ -79,6 +199,13 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
           IconButton(icon: const Icon(Icons.logout), onPressed: _signOut),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white60,
+          indicatorColor: Colors.white,
+          tabs: categories.map((c) => Tab(text: categoryNames[c])).toList(),
+        ),
       ),
       body: Column(
         children: [
@@ -97,87 +224,9 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           ),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('menus')
-                  .where('isAvailable', isEqualTo: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(child: Text('에러: ${snapshot.error}'));
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('메뉴가 없습니다'));
-                }
-
-                final menuItems = snapshot.data!.docs;
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: menuItems.length,
-                  itemBuilder: (context, index) {
-                    final item =
-                        menuItems[index].data() as Map<String, dynamic>;
-                    return Card(
-                      elevation: 4,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.coffee,
-                            size: 50,
-                            color: Color(0xFF6F4E37),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            item['name'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${item['price']}원',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: () => _addToCart({
-                              'name': item['name'],
-                              'price': item['price'],
-                            }),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6F4E37),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                            ),
-                            child: const Text('담기'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
+            child: TabBarView(
+              controller: _tabController,
+              children: categories.map((c) => _buildMenuGrid(c)).toList(),
             ),
           ),
         ],
