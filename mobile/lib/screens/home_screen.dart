@@ -17,8 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, dynamic>> banners = [
     {
-      'title': '2024 WINTER\ne-FREQUENCY',
-      'subtitle': '[행사 기간] 12/01(일) ~ 12/31(화)',
+      'title': '2025 WINTER\ne-FREQUENCY',
+      'subtitle': '[행사 기간] 12/01(월) ~ 12/31(수)',
       'gradient': [const Color(0xFF1B5E20), const Color(0xFF4CAF50)],
       'image': Icons.ac_unit,
     },
@@ -451,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '2024. 12. 1 (일) ~ 12. 31 (화)',
+                  '2025. 12. 1 (월) ~ 12. 31 (수)',
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
