@@ -81,7 +81,7 @@ class _CartScreenState extends State<CartScreen> {
         setState(() {
           _cartItems.clear();
         });
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {

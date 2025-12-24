@@ -178,13 +178,18 @@ class _MenuScreenState extends State<MenuScreen>
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => CartScreen(cartItems: cart),
                     ),
                   );
+                  if (result == true) {
+                    setState(() {
+                      cart.clear();
+                    });
+                  }
                 },
               ),
               if (cart.isNotEmpty)
