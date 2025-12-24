@@ -19,54 +19,74 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
   const MAIN_LIGHTER = '#E8F0EC';
 
   // 배너 데이터
-  const banners = [
+const banners = [
+  {
+    id: 1,
+    title: '2025 WINTER',
+    title2: 'e-FREQUENCY',
+    subtitle: '[행사 기간] 12/01(일) ~ 12/31(화)',
+    bg: `linear-gradient(135deg, ${MAIN_COLOR} 0%, ${MAIN_LIGHT} 100%)`,
+    icon: (
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="2" x2="12" y2="22" />
+        <line x1="2" y1="12" x2="22" y2="12" />
+        <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" />
+        <line x1="19.5" y1="4.5" x2="4.5" y2="19.5" />
+      </svg>
+    ),
+  },
+  {
+    id: 2,
+    title: '크리스마스 시즌',
+    title2: '스페셜 음료',
+    subtitle: '달콤한 연말의 시작',
+    bg: 'linear-gradient(135deg, #1E3932 0%, #00704A 100%)',
+    icon: (
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" />
+        <path d="M22 7H2v5h20V7z" />
+        <path d="M12 7v15" />
+        <path d="M12 7H8.5a2.5 2.5 0 1 1 0-5c2.4 0 3.5 2.7 3.5 5z" />
+        <path d="M12 7h3.5a2.5 2.5 0 1 0 0-5c-2.4 0-3.5 2.7-3.5 5z" />
+      </svg>
+    ),
+  },
+  {
+    id: 3,
+    title: '신규 회원',
+    title2: '첫 주문 할인',
+    subtitle: '아메리카노 50% 할인',
+    bg: `linear-gradient(135deg, #1E3932 0%, ${MAIN_COLOR} 100%)`,
+    icon: (
+           <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 12l-8 8a2 2 0 0 1-2.8 0L2 12V2h10l8 8z" />
+        <circle cx="7" cy="7" r="1.5" />
+      </svg>
+    ),
+  },
+];
+
+  // 이벤트 카드 데이터 (스타벅스 느낌: 여백/타이포 중심 + 은은한 포인트 컬러)
+  const events = [
     {
       id: 1,
-      title: '2024 WINTER',
-      title2: 'e-FREQUENCY',
-      subtitle: '[행사 기간] 12/01(일) ~ 12/31(화)',
-      bg: `linear-gradient(135deg, ${MAIN_COLOR} 0%, ${MAIN_LIGHT} 100%)`,
-      icon: '❄️',
+      badge: '매주 월요일',
+      badgeTone: 'soft',
+      title: '스탬프 더블 적립',
+      desc: '아침 9~11시 아메리카노 주문 시 스탬프 2배 적립',
+      period: '~ 12/31',
+      accent: '#00704A',
+      icon: '⭐',
     },
     {
       id: 2,
-      title: '크리스마스 시즌',
-      title2: '스페셜 음료',
-      subtitle: '달콤한 연말의 시작',
-      bg: 'linear-gradient(135deg, #1E3932 0%, #00704A 100%)',
-      icon: '🎁',
-    },
-    {
-      id: 3,
-      title: '신규 회원',
-      title2: '첫 주문 할인',
-      subtitle: '아메리카노 50% 할인',
-      bg: `linear-gradient(135deg, #1E3932 0%, ${MAIN_COLOR} 100%)`,
-      icon: '🏷️',
-    },
-  ];
-
-  // 이벤트 카드 데이터
-  const eventCards = [
-    {
-      id: 'double-stamp',
-      badge: '매주 월요일',
-      title: '스탬프 더블 적립',
-      description: '아침 9-11시 아메리카노 주문 시 스탬프 2배 적립',
-      period: '~ 12/31',
-      bg: '#204031',
-      isDark: true,
-      icon: '🎟️',
-    },
-    {
-      id: 'holiday-set',
       badge: '연말 한정',
+      badgeTone: 'sparkle',
       title: '홀리데이 세트',
-      description: '크리스마스 라떼 + 시나몬 번 세트 15% 할인',
+      desc: '크리스마스 라떼 + 시나몬 번 세트 15% 할인',
       period: '12/15 - 12/31',
-      bg: '#FFFFFF',
-      isDark: false,
-      icon: '✨',
+      accent: '#1E3932',
+      icon: '🎄',
     },
   ];
 
@@ -86,12 +106,10 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
     return () => clearInterval(timer);
   }, [banners.length]);
 
-  // 추천 메뉴: 커피 1개 우선 포함 후 4개 구성
-  const availableMenus = menus.filter((menu) => menu.isAvailable);
-  const coffeePick = availableMenus.find((menu) => menu.category === 'coffee');
-  const recommendedMenus = coffeePick
-    ? [coffeePick, ...availableMenus.filter((menu) => menu.id !== coffeePick.id)].slice(0, 4)
-    : availableMenus.slice(0, 4);
+  // 추천 메뉴 (4개)
+  const recommendedMenus = menus
+    .filter((menu) => menu.isAvailable)
+    .slice(0, 4);
 
   // 가격 포맷
   const formatPrice = (price: number) => {
@@ -485,105 +503,195 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
         )}
       </section>
 
-      {/* 이벤트 카드 섹션 */}
+      {/* 이벤트 카드 섹션 (추천 메뉴 아래) */}
       <section style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        padding: '0 1.5rem 2.5rem'
+        padding: '0 1.5rem 1.75rem'
       }}>
+        {/* 섹션 헤더 */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1.25rem'
+          alignItems: 'baseline',
+          marginBottom: '1rem'
         }}>
           <h2 style={{
-            fontSize: '1.5rem',
-            fontWeight: '700',
+            fontSize: '1.25rem',
+            fontWeight: 800,
             color: '#1E1E1E',
-            letterSpacing: '-0.02em'
+            letterSpacing: '-0.02em',
+            margin: 0
           }}>
             이벤트
           </h2>
-          <span style={{ color: '#888', fontSize: '0.95rem' }}>
+          <span style={{
+            fontSize: '0.9rem',
+            color: '#777'
+          }}>
             놓치기 전에 참여해 보세요
           </span>
         </div>
 
+        {/* 카드 그리드 */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
           gap: '1rem'
         }}>
-          {eventCards.map((event) => (
+          {events.map((ev) => (
             <div
-              key={event.id}
+              key={ev.id}
               style={{
-                background: event.bg,
-                borderRadius: '1rem',
-                padding: '1.25rem 1.5rem',
+                backgroundColor: 'white',
+                borderRadius: '1.25rem',
+                border: '1px solid rgba(32,64,49,0.12)',
+                boxShadow: '0 6px 18px rgba(0,0,0,0.06)',
+                overflow: 'hidden',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-                border: event.isDark ? 'none' : `1px solid ${MAIN_COLOR}20`
+                alignItems: 'stretch',
+                minHeight: '140px',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               }}
+              onMouseEnter={(e) => {
+  e.currentTarget.style.transform = 'translateY(-3px)';
+  e.currentTarget.style.boxShadow = '0 12px 26px rgba(0,0,0,0.10)';
+}}
+onMouseLeave={(e) => {
+  e.currentTarget.style.transform = 'translateY(0)';
+  e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.06)';
+}}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{
-                  backgroundColor: event.isDark ? 'white' : `${MAIN_COLOR}10`,
-                  borderRadius: '999px',
-                  padding: '0.25rem 0.75rem',
-                  fontSize: '0.8rem',
-                  fontWeight: '700',
-                  color: event.isDark ? MAIN_COLOR : MAIN_COLOR
-                }}>
-                  {event.badge}
-                </span>
-                <span style={{ fontSize: '1.25rem' }}>{event.icon}</span>
-              </div>
-              <div>
-                <h3 style={{
-                  fontSize: '1.2rem',
-                  fontWeight: '700',
-                  color: event.isDark ? 'white' : '#1E1E1E',
-                  marginBottom: '0.25rem'
-                }}>
-                  {event.title}
-                </h3>
-                <p style={{ color: event.isDark ? 'rgba(255,255,255,0.9)' : '#4A4A4A', lineHeight: 1.4, margin: 0 }}>
-                  {event.description}
-                </p>
-              </div>
+              {/* 좌측 포인트 바 (Starbucks 느낌) */}
               <div style={{
+  width: '10px',
+  backgroundColor: ev.accent, // 단색
+}} />
+
+              {/* 본문 */}
+              <div style={{
+                flex: 1,
+                padding: '1.25rem 1.25rem',
                 display: 'flex',
-                alignItems: 'center',
                 justifyContent: 'space-between',
-                marginTop: '0.5rem'
+                gap: '1rem'
               }}>
-                <span style={{ color: event.isDark ? 'rgba(255,255,255,0.85)' : '#555', fontWeight: '600' }}>{event.period}</span>
-                <button
-                  onClick={onOrderClick}
-                  style={{
-                    backgroundColor: event.isDark ? 'white' : MAIN_COLOR,
-                    color: event.isDark ? MAIN_COLOR : 'white',
-                    border: 'none',
+                {/* 텍스트 */}
+                <div style={{ minWidth: 0 }}>
+                  {/* 뱃지 */}
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.3rem 0.65rem',
                     borderRadius: '999px',
-                    padding: '0.6rem 1rem',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    boxShadow: event.isDark ? '0 6px 16px rgba(32,64,49,0.25)' : '0 6px 16px rgba(0,0,0,0.08)',
-                    transition: 'transform 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                >
-                  주문하기
-                </button>
+                    backgroundColor: ev.badgeTone === 'sparkle' ? 'rgba(0,112,74,0.08)' : 'rgba(32,64,49,0.06)',
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    color: '#1E3932',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.04em'
+                  }}>
+                    <span style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: ev.accent
+                    }} />
+                    {ev.badge}
+                    {ev.badgeTone === 'sparkle' ? <span style={{ marginLeft: '0.25rem' }}>✨</span> : null}
+                  </div>
+
+                  <h3 style={{
+                    margin: '0.75rem 0 0.35rem',
+                    fontSize: '1.25rem',
+                    fontWeight: 800,
+                    color: '#1E1E1E',
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1.25,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {ev.title}
+                  </h3>
+
+                  <p style={{
+                    margin: 0,
+                    color: '#555',
+                    fontSize: '0.95rem',
+                    lineHeight: 1.4,
+                    overflow: 'hidden',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical'
+                  }}>
+                    {ev.desc}
+                  </p>
+
+                  <div style={{
+                    marginTop: '0.9rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '0.75rem'
+                  }}>
+                    <span style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 700,
+                      color: '#333'
+                    }}>
+                      {ev.period}
+                    </span>
+
+                    <button
+                      onClick={onOrderClick}
+                      style={{
+                        padding: '0.55rem 1rem',
+                        borderRadius: '999px',
+                        border: 'none',
+                        backgroundColor: MAIN_COLOR,
+                        color: 'white',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = MAIN_LIGHT;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = MAIN_COLOR;
+                      }}
+                    >
+                      주문하기
+                    </button>
+                  </div>
+                </div>
+
+                {/* 우측 비주얼 (이미지 자리: 나중에 컵/제품 이미지로 교체 가능) */}
+                <div style={{
+                  width: '120px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <div style={{
+                    width: '92px',
+                    height: '92px',
+                    borderRadius: '50%',
+                    background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(232,240,236,0.9))`,
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: ev.accent,
+                    fontSize: '2.1rem',
+                    boxShadow: '0 10px 18px rgba(0,0,0,0.08)'
+                  }}>
+                    {ev.icon}
+                  </div>
+                </div>
               </div>
             </div>
           ))}
