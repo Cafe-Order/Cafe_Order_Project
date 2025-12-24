@@ -4,11 +4,16 @@ import { useCartStore } from '../store/useStore';
 import { MenuItem, CATEGORIES, MenuCategory } from '../types';
 import { subscribeToMenus } from '../services/menuService';
 
-const MenuPage = () => {
+interface MenuPageProps {
+  onCartClick: () => void;
+}
+
+const MenuPage = ({ onCartClick }: MenuPageProps) => {
   const { user, logoutUser } = useAuth();
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory | 'all'>('all');
   const [loading, setLoading] = useState(true);
+  const [addedItem, setAddedItem] = useState<string | null>(null);
   
   const { addToCart, getTotalItems, getTotalPrice } = useCartStore();
 
@@ -30,6 +35,8 @@ const MenuPage = () => {
   // 장바구니에 추가
   const handleAddToCart = (menu: MenuItem) => {
     addToCart(menu, 1);
+    setAddedItem(menu.id);
+    setTimeout(() => setAddedItem(null), 1000);
   };
 
   // 가격 포맷
@@ -72,13 +79,19 @@ const MenuPage = () => {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* 장바구니 */}
-            <div style={{
-              position: 'relative',
-              padding: '0.5rem',
-              cursor: 'pointer'
-            }}>
-              <span style={{ fontSize: '1.5rem' }}>🛒</span>
+            {/* 장바구니 버튼 */}
+            <button
+              onClick={onCartClick}
+              style={{
+                position: 'relative',
+                padding: '0.5rem',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1.5rem'
+              }}
+            >
+              🛒
               {getTotalItems() > 0 && (
                 <span style={{
                   position: 'absolute',
@@ -98,17 +111,32 @@ const MenuPage = () => {
                   {getTotalItems()}
                 </span>
               )}
-            </div>
+            </button>
 
             {/* 사용자 정보 */}
             {user && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                {user.photoURL && (
+                {user.photoURL ? (
                   <img
                     src={user.photoURL}
                     alt="프로필"
                     style={{ width: '32px', height: '32px', borderRadius: '50%' }}
                   />
+                ) : (
+                  <span style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: '#78350f',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '0.875rem'
+                  }}>
+                    {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
+                  </span>
                 )}
                 <button
                   onClick={handleLogout}
@@ -130,7 +158,7 @@ const MenuPage = () => {
       </header>
 
       {/* 메인 컨텐츠 */}
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem 1rem' }}>
+      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem 1rem', paddingBottom: '6rem' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
           메뉴
         </h1>
@@ -266,16 +294,19 @@ const MenuPage = () => {
                       disabled={!menu.isAvailable}
                       style={{
                         padding: '0.5rem 1rem',
-                        backgroundColor: menu.isAvailable ? '#78350f' : '#d1d5db',
+                        backgroundColor: addedItem === menu.id 
+                          ? '#16a34a' 
+                          : menu.isAvailable ? '#78350f' : '#d1d5db',
                         color: 'white',
                         border: 'none',
                         borderRadius: '0.5rem',
                         fontWeight: '500',
                         cursor: menu.isAvailable ? 'pointer' : 'not-allowed',
-                        fontSize: '0.875rem'
+                        fontSize: '0.875rem',
+                        transition: 'background-color 0.2s'
                       }}
                     >
-                      {menu.isAvailable ? '담기' : '품절'}
+                      {addedItem === menu.id ? '✓ 담김' : menu.isAvailable ? '담기' : '품절'}
                     </button>
                   </div>
                 </div>
@@ -308,15 +339,18 @@ const MenuPage = () => {
               <span style={{ fontWeight: '600' }}>🛒 {getTotalItems()}개 상품</span>
               <span style={{ marginLeft: '1rem' }}>{formatPrice(getTotalPrice())}</span>
             </div>
-            <button style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: 'white',
-              color: '#78350f',
-              border: 'none',
-              borderRadius: '0.5rem',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}>
+            <button 
+              onClick={onCartClick}
+              style={{
+                padding: '0.75rem 1.5rem',
+                backgroundColor: 'white',
+                color: '#78350f',
+                border: 'none',
+                borderRadius: '0.5rem',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
               장바구니 보기
             </button>
           </div>
