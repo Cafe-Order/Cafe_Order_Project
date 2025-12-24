@@ -120,6 +120,17 @@ class OrdersScreen extends StatelessWidget {
     );
   }
 
+  // GitHub URL 변환 함수
+  String _convertImageUrl(String url) {
+    if (url.contains('github.com') && url.contains('/blob/')) {
+      return url
+          .replaceFirst('github.com', 'raw.githubusercontent.com')
+          .replaceFirst('/blob/', '/')
+          .replaceAll('?raw=true', '');
+    }
+    return url;
+  }
+
   Widget _buildOrderCard(
     BuildContext context,
     Map<String, dynamic> order,
@@ -242,6 +253,10 @@ class OrdersScreen extends StatelessWidget {
                       ? quantity
                       : int.tryParse(quantity.toString()) ?? 1;
 
+                  // 이미지 URL 가져오기
+                  String imageUrl = item['imageUrl'] as String? ?? '';
+                  imageUrl = _convertImageUrl(imageUrl);
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Row(
@@ -253,11 +268,24 @@ class OrdersScreen extends StatelessWidget {
                             color: const Color(0xFF00704A).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(
-                            Icons.coffee,
-                            color: Color(0xFF00704A),
-                            size: 22,
-                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: imageUrl.isNotEmpty
+                              ? Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.coffee,
+                                      color: Color(0xFF00704A),
+                                      size: 22,
+                                    );
+                                  },
+                                )
+                              : const Icon(
+                                  Icons.coffee,
+                                  color: Color(0xFF00704A),
+                                  size: 22,
+                                ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(

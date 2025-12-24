@@ -173,6 +173,7 @@ class _CartScreenState extends State<CartScreen> {
                 'name': item['name'],
                 'price': item['price'],
                 'quantity': item['quantity'],
+                'imageUrl': item['imageUrl'] ?? '',
               },
             )
             .toList(),
