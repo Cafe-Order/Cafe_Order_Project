@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,8 +13,10 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen>
     with SingleTickerProviderStateMixin {
-  final List<Map<String, dynamic>> cart = [];
+  List<Map<String, dynamic>> cart = [];
   late TabController _tabController;
+  StreamSubscription<DocumentSnapshot>? _cartSubscription;
+
   final List<String> categories = ['전체', 'coffee', 'beverage', 'bakery'];
   final Map<String, String> categoryNames = {
     '전체': '전체',
@@ -26,89 +29,143 @@ class _OrderScreenState extends State<OrderScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: categories.length, vsync: this);
-    _loadCart();
+    _subscribeToCart();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _cartSubscription?.cancel();
     super.dispose();
   }
 
-  Future<void> _loadCart() async {
+  // 장바구니 실시간 구독 (웹 구조에 맞게)
+  void _subscribeToCart() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final doc = await FirebaseFirestore.instance
+    _cartSubscription = FirebaseFirestore.instance
         .collection('carts')
         .doc(user.uid)
-        .get();
+        .snapshots()
+        .listen((doc) {
+          if (!mounted) return;
 
-    if (!mounted) return;
-
-    if (doc.exists && doc.data() != null) {
-      final data = doc.data()!;
-      final items = data['items'] as List<dynamic>? ?? [];
-      setState(() {
-        cart.clear();
-        for (var item in items) {
-          cart.add({
-            'name': item['name'] ?? '알 수 없음',
-            'price': item['price'] ?? 0,
-            'quantity': item['quantity'] ?? 1,
-          });
-        }
-      });
-    }
+          if (doc.exists && doc.data() != null) {
+            final data = doc.data()!;
+            final items = data['items'] as List<dynamic>? ?? [];
+            setState(() {
+              cart = items.map((item) {
+                // 웹 구조: menuItem 안에 데이터, quantity는 밖에
+                final menuItem =
+                    item['menuItem'] as Map<String, dynamic>? ?? item;
+                final quantity = item['quantity'] ?? menuItem['quantity'] ?? 1;
+                return {
+                  'name': menuItem['name'] ?? '알 수 없음',
+                  'price': menuItem['price'] ?? 0,
+                  'quantity': quantity,
+                  'category': menuItem['category'] ?? '',
+                  'description': menuItem['description'] ?? '',
+                  'id': menuItem['id'] ?? '',
+                  'imageUrl': menuItem['imageUrl'] ?? '',
+                };
+              }).toList();
+            });
+          } else {
+            setState(() {
+              cart = [];
+            });
+          }
+        });
   }
 
-  Future<void> _saveCart() async {
+  // 장바구니 저장 (웹 구조에 맞게 menuItem 사용)
+  Future<void> _addItemToCart(Map<String, dynamic> newItem) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('로그인이 필요합니다')));
+      return;
+    }
 
-    await FirebaseFirestore.instance.collection('carts').doc(user.uid).set({
-      'items': cart
-          .map(
-            (item) => {
+    final name = newItem['name'] ?? '알 수 없음';
+    final price = newItem['price'] ?? 0;
+    final category = newItem['category'] ?? '';
+    final description = newItem['description'] ?? '';
+    final id = newItem['id'] ?? '';
+    final imageUrl = newItem['imageUrl'] ?? '';
+
+    try {
+      // 현재 장바구니에서 같은 아이템 찾기
+      final existingIndex = cart.indexWhere((i) => i['name'] == name);
+
+      List<Map<String, dynamic>> updatedCart = List.from(cart);
+
+      if (existingIndex >= 0) {
+        // 이미 있으면 수량만 증가
+        updatedCart[existingIndex] = {
+          ...updatedCart[existingIndex],
+          'quantity': (updatedCart[existingIndex]['quantity'] ?? 1) + 1,
+        };
+      } else {
+        // 없으면 새로 추가
+        updatedCart.add({
+          'name': name,
+          'price': price,
+          'quantity': 1,
+          'category': category,
+          'description': description,
+          'id': id,
+          'imageUrl': imageUrl,
+        });
+      }
+
+      // Firebase에 저장 (웹 구조: quantity는 menuItem 밖에)
+      await FirebaseFirestore.instance.collection('carts').doc(user.uid).set({
+        'items': updatedCart.map((item) {
+          return {
+            'menuItem': {
               'name': item['name'],
               'price': item['price'],
-              'quantity': item['quantity'],
+              'category': item['category'] ?? '',
+              'description': item['description'] ?? '',
+              'id': item['id'] ?? '',
+              'imageUrl': item['imageUrl'] ?? '',
+              'isAvailable': true,
             },
-          )
-          .toList(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-  }
+            'quantity': item['quantity'],
+          };
+        }).toList(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
 
-  void _addToCart(Map<String, dynamic> item) {
-    final name = item['name'] ?? '알 수 없음';
-    final price = item['price'] ?? 0;
-
-    setState(() {
-      final existingIndex = cart.indexWhere((i) => i['name'] == name);
-      if (existingIndex >= 0) {
-        cart[existingIndex]['quantity']++;
-      } else {
-        cart.add({'name': name, 'price': price, 'quantity': 1});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Text('$name 담김!'),
+              ],
+            ),
+            backgroundColor: const Color(0xFF00704A),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            duration: const Duration(seconds: 1),
+          ),
+        );
       }
-    });
-    _saveCart();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 8),
-            Text('$name 담김!'),
-          ],
-        ),
-        backgroundColor: const Color(0xFF00704A),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 1),
-      ),
-    );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('저장 실패: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   IconData _getCategoryIcon(String? category) {
@@ -174,7 +231,9 @@ class _OrderScreenState extends State<OrderScreen>
           ),
           itemCount: menuItems.length,
           itemBuilder: (context, index) {
-            final item = menuItems[index].data() as Map<String, dynamic>;
+            final doc = menuItems[index];
+            final item = doc.data() as Map<String, dynamic>;
+            item['id'] = doc.id; // 문서 ID 추가
             return _buildMenuItem(item);
           },
         );
@@ -190,7 +249,14 @@ class _OrderScreenState extends State<OrderScreen>
         side: BorderSide(color: Colors.grey.shade200),
       ),
       child: InkWell(
-        onTap: () => _addToCart({'name': item['name'], 'price': item['price']}),
+        onTap: () => _addItemToCart({
+          'name': item['name'],
+          'price': item['price'],
+          'category': item['category'],
+          'description': item['description'] ?? '',
+          'id': item['id'] ?? '',
+          'imageUrl': item['imageUrl'] ?? '',
+        }),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -272,20 +338,12 @@ class _OrderScreenState extends State<OrderScreen>
               IconButton(
                 icon: const Icon(Icons.shopping_bag_outlined, size: 28),
                 onPressed: () async {
-                  final result = await Navigator.push(
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => CartScreen(cartItems: cart),
                     ),
                   );
-                  if (result == true) {
-                    setState(() {
-                      cart.clear();
-                      _saveCart();
-                    });
-                  } else {
-                    _loadCart();
-                  }
                 },
               ),
               if (cart.isNotEmpty)
@@ -342,24 +400,15 @@ class _OrderScreenState extends State<OrderScreen>
         controller: _tabController,
         children: categories.map((c) => _buildMenuGrid(c)).toList(),
       ),
-      // 장바구니 플로팅 버튼 (아이템 있을 때만)
       floatingActionButton: cart.isNotEmpty
           ? FloatingActionButton.extended(
               onPressed: () async {
-                final result = await Navigator.push(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CartScreen(cartItems: cart),
                   ),
                 );
-                if (result == true) {
-                  setState(() {
-                    cart.clear();
-                    _saveCart();
-                  });
-                } else {
-                  _loadCart();
-                }
               },
               backgroundColor: const Color(0xFF00704A),
               icon: const Icon(Icons.shopping_cart),

@@ -48,15 +48,20 @@ class _CartScreenState extends State<CartScreen> {
     if (user == null) return;
 
     await FirebaseFirestore.instance.collection('carts').doc(user.uid).set({
-      'items': _cartItems
-          .map(
-            (item) => {
-              'name': item['name'],
-              'price': item['price'],
-              'quantity': item['quantity'],
-            },
-          )
-          .toList(),
+      'items': _cartItems.map((item) {
+        return {
+          'menuItem': {
+            'name': item['name'],
+            'price': item['price'],
+            'category': item['category'] ?? '',
+            'description': item['description'] ?? '',
+            'id': item['id'] ?? '',
+            'imageUrl': item['imageUrl'] ?? '',
+            'isAvailable': true,
+          },
+          'quantity': item['quantity'],
+        };
+      }).toList(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
