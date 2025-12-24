@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
@@ -8,12 +9,12 @@ import OrderCompletePage from './pages/OrderCompletePage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 
 // 페이지 타입
-type Page = 'menu' | 'cart' | 'order' | 'orderComplete' | 'orderHistory';
+type Page = 'main' | 'login' | 'menu' | 'cart' | 'order' | 'orderComplete' | 'orderHistory';
 
-// 메인 콘텐츠 (로그인 상태에 따라 분기)
+// 메인 콘텐츠
 const MainContent = () => {
   const { user, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState<Page>('menu');
+  const [currentPage, setCurrentPage] = useState<Page>('main');
   const [completedOrderId, setCompletedOrderId] = useState<string>('');
 
   if (loading) {
@@ -30,13 +31,34 @@ const MainContent = () => {
     );
   }
 
-  // 로그인 안됐으면 로그인 페이지
-  if (!user) {
-    return <LoginPage />;
-  }
-
   // 페이지 네비게이션
   switch (currentPage) {
+    case 'login':
+      return (
+        <LoginPage 
+          onLoginSuccess={() => setCurrentPage('menu')}
+          onBack={() => setCurrentPage('main')}
+        />
+      );
+
+    case 'menu':
+      // 로그인 안됐으면 로그인 페이지로
+      if (!user) {
+        return (
+          <LoginPage 
+            onLoginSuccess={() => setCurrentPage('menu')}
+            onBack={() => setCurrentPage('main')}
+          />
+        );
+      }
+      return (
+        <MenuPage 
+          onCartClick={() => setCurrentPage('cart')}
+          onOrderHistoryClick={() => setCurrentPage('orderHistory')}
+          onBackToMain={() => setCurrentPage('main')}
+        />
+      );
+    
     case 'cart':
       return (
         <CartPage 
@@ -75,12 +97,12 @@ const MainContent = () => {
         />
       );
     
-    case 'menu':
+    case 'main':
     default:
       return (
-        <MenuPage 
-          onCartClick={() => setCurrentPage('cart')}
-          onOrderHistoryClick={() => setCurrentPage('orderHistory')}
+        <MainPage 
+          onOrderClick={() => setCurrentPage(user ? 'menu' : 'login')}
+          onLoginClick={() => setCurrentPage('login')}
         />
       );
   }
