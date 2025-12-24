@@ -100,6 +100,54 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
+  Future<void> _clearCart() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('전체 삭제'),
+        content: const Text('장바구니를 비우시겠습니까?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('취소', style: TextStyle(color: Colors.grey[600])),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('삭제', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('carts')
+          .doc(user.uid)
+          .delete();
+    }
+
+    setState(() {
+      _cartItems.clear();
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('장바구니가 비워졌습니다'),
+          backgroundColor: Colors.grey[800],
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    }
+  }
+
   Future<void> _placeOrder() async {
     if (_cartItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -247,6 +295,13 @@ class _CartScreenState extends State<CartScreen> {
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => Navigator.pop(context, 'updated'),
           ),
+          actions: [
+            if (_cartItems.isNotEmpty)
+              TextButton(
+                onPressed: _clearCart,
+                child: const Text('전체삭제', style: TextStyle(color: Colors.red)),
+              ),
+          ],
         ),
         body: _cartItems.isEmpty
             ? _buildEmptyCart()
