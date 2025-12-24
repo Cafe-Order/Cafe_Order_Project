@@ -95,8 +95,12 @@ class OrdersScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('${item['name']} x ${item['quantity']}'),
-                              Text('${item['price'] * item['quantity']}원'),
+                              Text(
+                                '${item['name'] ?? ''} x ${item['quantity'] ?? 1}',
+                              ),
+                              Text(
+                                '${(item['price'] ?? 0) * (item['quantity'] ?? 1)}원',
+                              ),
                             ],
                           ),
                         ),
