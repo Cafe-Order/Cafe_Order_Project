@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onNavigateToOrder;
+
+  HomeScreen({super.key, this.onNavigateToOrder});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -12,6 +14,107 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _bannerController = PageController();
   int _currentBanner = 0;
+
+  // 장바구니에 추가
+  Future<void> _addItemToCart(Map<String, dynamic> item) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('로그인이 필요합니다')));
+      return;
+    }
+
+    try {
+      final cartDoc = await FirebaseFirestore.instance
+          .collection('carts')
+          .doc(user.uid)
+          .get();
+
+      List<Map<String, dynamic>> currentItems = [];
+      if (cartDoc.exists && cartDoc.data() != null) {
+        final items = cartDoc.data()!['items'] as List<dynamic>? ?? [];
+        currentItems = items.map((i) {
+          final menuItem = i['menuItem'] as Map<String, dynamic>? ?? i;
+          final quantity = i['quantity'] ?? menuItem['quantity'] ?? 1;
+          return {
+            'name': menuItem['name'],
+            'price': menuItem['price'],
+            'quantity': quantity,
+            'category': menuItem['category'] ?? '',
+            'description': menuItem['description'] ?? '',
+            'id': menuItem['id'] ?? '',
+            'imageUrl': menuItem['imageUrl'] ?? '',
+          };
+        }).toList();
+      }
+
+      final existingIndex = currentItems.indexWhere(
+        (i) => i['name'] == item['name'],
+      );
+
+      if (existingIndex >= 0) {
+        currentItems[existingIndex]['quantity'] =
+            (currentItems[existingIndex]['quantity'] ?? 1) + 1;
+      } else {
+        currentItems.add({
+          'name': item['name'],
+          'price': item['price'],
+          'quantity': 1,
+          'category': item['category'] ?? '',
+          'description': item['description'] ?? '',
+          'id': item['id'] ?? '',
+          'imageUrl': item['imageUrl'] ?? '',
+        });
+      }
+
+      await FirebaseFirestore.instance.collection('carts').doc(user.uid).set({
+        'items': currentItems
+            .map(
+              (i) => {
+                'menuItem': {
+                  'name': i['name'],
+                  'price': i['price'],
+                  'category': i['category'] ?? '',
+                  'description': i['description'] ?? '',
+                  'id': i['id'] ?? '',
+                  'imageUrl': i['imageUrl'] ?? '',
+                  'isAvailable': true,
+                },
+                'quantity': i['quantity'],
+              },
+            )
+            .toList(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Text('${item['name']} 담김!'),
+              ],
+            ),
+            backgroundColor: const Color(0xFF00704A),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('저장 실패: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
 
   final List<Map<String, dynamic>> banners = [
     {
@@ -75,6 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverToBoxAdapter(child: _buildRecommendSection()),
             // 이벤트 카드
             SliverToBoxAdapter(child: _buildEventCard()),
+            // 스탬프 이벤트 카드
+            SliverToBoxAdapter(child: _buildStampEventCard()),
             // 하단 여백
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
           ],
@@ -241,12 +346,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 '추천 메뉴',
                 style: TextStyle(
                   fontSize: 20,
@@ -254,12 +359,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.black87,
                 ),
               ),
-              Text(
-                '더보기 >',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF00704A),
-                  fontWeight: FontWeight.w500,
+              GestureDetector(
+                onTap: widget.onNavigateToOrder,
+                child: const Text(
+                  '더보기 >',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF00704A),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -316,47 +424,103 @@ class _HomeScreenState extends State<HomeScreen> {
         icon = Icons.restaurant;
     }
 
+    // 이미지 URL 가져오기
+    String imageUrl = menu['imageUrl'] as String? ?? '';
+
+    // GitHub blob URL을 raw URL로 변환
+    if (imageUrl.contains('github.com') && imageUrl.contains('/blob/')) {
+      imageUrl = imageUrl
+          .replaceFirst('github.com', 'raw.githubusercontent.com')
+          .replaceFirst('/blob/', '/')
+          .replaceAll('?raw=true', '');
+    }
+
     return Container(
       width: 140,
       margin: const EdgeInsets.only(right: 12),
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF00704A).withOpacity(0.1),
-                  shape: BoxShape.circle,
+        child: InkWell(
+          onTap: () => _addItemToCart(menu),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00704A).withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: imageUrl.isNotEmpty
+                      ? Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              icon,
+                              size: 32,
+                              color: const Color(0xFF00704A),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Color(0xFF00704A),
+                              ),
+                            );
+                          },
+                        )
+                      : Icon(icon, size: 32, color: const Color(0xFF00704A)),
                 ),
-                child: Icon(icon, size: 40, color: const Color(0xFF00704A)),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                menu['name'] ?? '',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 8),
+                Text(
+                  menu['name'] ?? '',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${menu['price']}원',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF00704A),
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 2),
+                Text(
+                  '${menu['price']}원',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF00704A),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00704A),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    '담기',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -430,6 +594,102 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.local_cafe,
               size: 40,
               color: Color(0xFF6F4E37),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStampEventCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00704A),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'STAMP',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  '스탬프 10개 적립 시\n음료 1잔 무료!',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: List.generate(10, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Icon(
+                        index < 3 ? Icons.coffee : Icons.coffee_outlined,
+                        size: 18,
+                        color: index < 3
+                            ? const Color(0xFF00704A)
+                            : Colors.grey[300],
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8F5E9),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '3',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00704A),
+                  ),
+                ),
+                Text(
+                  '/ 10',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF00704A)),
+                ),
+              ],
             ),
           ),
         ],

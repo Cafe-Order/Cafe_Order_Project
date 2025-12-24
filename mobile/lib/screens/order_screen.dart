@@ -242,6 +242,16 @@ class _OrderScreenState extends State<OrderScreen>
   }
 
   Widget _buildMenuItem(Map<String, dynamic> item) {
+    String imageUrl = item['imageUrl'] as String? ?? '';
+
+    // GitHub blob URL을 raw URL로 변환
+    if (imageUrl.contains('github.com') && imageUrl.contains('/blob/')) {
+      imageUrl = imageUrl
+          .replaceFirst('github.com', 'raw.githubusercontent.com')
+          .replaceFirst('/blob/', '/')
+          .replaceAll('?raw=true', '');
+    }
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -255,7 +265,7 @@ class _OrderScreenState extends State<OrderScreen>
           'category': item['category'],
           'description': item['description'] ?? '',
           'id': item['id'] ?? '',
-          'imageUrl': item['imageUrl'] ?? '',
+          'imageUrl': imageUrl,
         }),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -263,6 +273,7 @@ class _OrderScreenState extends State<OrderScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 이미지 또는 아이콘
               Container(
                 width: 80,
                 height: 80,
@@ -270,11 +281,33 @@ class _OrderScreenState extends State<OrderScreen>
                   color: const Color(0xFF00704A).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  _getCategoryIcon(item['category']),
-                  size: 45,
-                  color: const Color(0xFF00704A),
-                ),
+                clipBehavior: Clip.antiAlias,
+                child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            _getCategoryIcon(item['category']),
+                            size: 45,
+                            color: const Color(0xFF00704A),
+                          );
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF00704A),
+                            ),
+                          );
+                        },
+                      )
+                    : Icon(
+                        _getCategoryIcon(item['category']),
+                        size: 45,
+                        color: const Color(0xFF00704A),
+                      ),
               ),
               const SizedBox(height: 12),
               Text(
