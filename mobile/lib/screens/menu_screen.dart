@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'cart_screen.dart';
 import 'orders_screen.dart';
 
@@ -27,12 +28,58 @@ class _MenuScreenState extends State<MenuScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: categories.length, vsync: this);
+    _loadCart();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  // Firestore에서 장바구니 불러오기
+  Future<void> _loadCart() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final doc = await FirebaseFirestore.instance
+        .collection('carts')
+        .doc(user.uid)
+        .get();
+
+    if (doc.exists && doc.data() != null) {
+      final data = doc.data()!;
+      final items = data['items'] as List<dynamic>? ?? [];
+      setState(() {
+        cart.clear();
+        for (var item in items) {
+          cart.add({
+            'name': item['name'],
+            'price': item['price'],
+            'quantity': item['quantity'],
+          });
+        }
+      });
+    }
+  }
+
+  // Firestore에 장바구니 저장
+  Future<void> _saveCart() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await FirebaseFirestore.instance.collection('carts').doc(user.uid).set({
+      'items': cart
+          .map(
+            (item) => {
+              'name': item['name'],
+              'price': item['price'],
+              'quantity': item['quantity'],
+            },
+          )
+          .toList(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
   }
 
   void _addToCart(Map<String, dynamic> item) {
@@ -44,12 +91,15 @@ class _MenuScreenState extends State<MenuScreen>
         cart.add({'name': item['name'], 'price': item['price'], 'quantity': 1});
       }
     });
+    _saveCart();
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('${item['name']} 담김!')));
   }
 
   Future<void> _signOut() async {
+    final googleSignIn = GoogleSignIn();
+    await googleSignIn.signOut();
     await FirebaseAuth.instance.signOut();
     if (mounted) {
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
@@ -178,13 +228,19 @@ class _MenuScreenState extends State<MenuScreen>
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => CartScreen(cartItems: cart),
                     ),
                   );
+                  if (result == true) {
+                    setState(() {
+                      cart.clear();
+                    });
+                    _saveCart();
+                  }
                 },
               ),
               if (cart.isNotEmpty)
