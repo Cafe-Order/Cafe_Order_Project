@@ -19,8 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       if (kIsWeb) {
-        // 웹용 로그인
+        // 웹용 로그인 - 계정 선택 강제
         GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.setCustomParameters({'prompt': 'select_account'});
         await FirebaseAuth.instance.signInWithPopup(googleProvider);
       } else {
         // 모바일용 로그인
