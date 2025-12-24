@@ -9,6 +9,10 @@ interface CartPageProps {
 const CartPage = ({ onBack, onOrder }: CartPageProps) => {
   const { items, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCartStore();
 
+  // 메인 컬러
+  const MAIN_COLOR = '#204031';
+  const MAIN_LIGHTER = '#E8F0EC';
+
   // 가격 포맷
   const formatPrice = (price: number) => {
     return price.toLocaleString('ko-KR') + '원';
@@ -26,14 +30,14 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#faf9f7',
-      fontFamily: 'system-ui, sans-serif'
+      backgroundColor: '#F9F9F9',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       {/* 헤더 */}
       <header style={{
         backgroundColor: 'white',
-        padding: '1rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        padding: '1rem 1.5rem',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         position: 'sticky',
         top: 0,
         zIndex: 100
@@ -52,32 +56,50 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
               border: 'none',
               fontSize: '1.5rem',
               cursor: 'pointer',
-              padding: '0.5rem'
+              padding: '0.5rem',
+              color: MAIN_COLOR
             }}
           >
             ←
           </button>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>장바구니</h1>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1E1E1E' }}>
+            장바구니
+          </h1>
         </div>
       </header>
 
       {/* 메인 컨텐츠 */}
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem 1rem' }}>
+      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem' }}>
         {items.length === 0 ? (
           /* 장바구니 비어있음 */
-          <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-            <p style={{ fontSize: '4rem', marginBottom: '1rem' }}>🛒</p>
-            <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>장바구니가 비어있습니다</p>
+          <div style={{ textAlign: 'center', padding: '5rem 1rem' }}>
+            <div style={{
+              width: '100px',
+              height: '100px',
+              borderRadius: '50%',
+              backgroundColor: MAIN_LIGHTER,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.5rem',
+              fontSize: '3rem'
+            }}>
+              🛒
+            </div>
+            <p style={{ color: '#888', marginBottom: '2rem', fontSize: '1.125rem' }}>
+              장바구니가 비어있습니다
+            </p>
             <button
               onClick={onBack}
               style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#78350f',
+                padding: '1rem 2rem',
+                backgroundColor: MAIN_COLOR,
                 color: 'white',
                 border: 'none',
-                borderRadius: '0.5rem',
+                borderRadius: '2rem',
                 fontWeight: '600',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                fontSize: '1rem'
               }}
             >
               메뉴 보러가기
@@ -92,9 +114,10 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#dc2626',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer'
+                  color: '#E53935',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  fontWeight: '500'
                 }}
               >
                 전체 삭제
@@ -109,17 +132,17 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
                   style={{
                     backgroundColor: 'white',
                     borderRadius: '1rem',
-                    padding: '1rem',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    padding: '1.25rem',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                     display: 'flex',
                     gap: '1rem'
                   }}
                 >
                   {/* 아이템 이미지 */}
                   <div style={{
-                    width: '70px',
-                    height: '70px',
-                    backgroundColor: '#fef3c7',
+                    width: '80px',
+                    height: '80px',
+                    backgroundColor: MAIN_LIGHTER,
                     borderRadius: '0.75rem',
                     display: 'flex',
                     alignItems: 'center',
@@ -138,7 +161,7 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
                         }}
                       />
                     ) : (
-                      <span style={{ fontSize: '1.75rem' }}>
+                      <span style={{ fontSize: '2rem' }}>
                         {CATEGORIES.find((c) => c.id === item.menuItem.category)?.icon || '☕'}
                       </span>
                     )}
@@ -147,21 +170,22 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
                   {/* 아이템 정보 */}
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <h3 style={{ fontWeight: '600' }}>{item.menuItem.name}</h3>
+                      <h3 style={{ fontWeight: '600', color: '#1E1E1E' }}>{item.menuItem.name}</h3>
                       <button
                         onClick={() => removeFromCart(item.menuItem.id)}
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#9ca3af',
+                          color: '#CCC',
                           cursor: 'pointer',
-                          fontSize: '1.25rem'
+                          fontSize: '1.5rem',
+                          lineHeight: 1
                         }}
                       >
                         ×
                       </button>
                     </div>
-                    <p style={{ color: '#6b7280', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                    <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.25rem' }}>
                       {formatPrice(item.menuItem.price)}
                     </p>
 
@@ -170,7 +194,7 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      marginTop: '0.75rem'
+                      marginTop: '1rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <button
@@ -179,10 +203,14 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
                             width: '32px',
                             height: '32px',
                             borderRadius: '50%',
-                            border: 'none',
-                            backgroundColor: '#f3f4f6',
+                            border: `1px solid #E0E0E0`,
+                            backgroundColor: 'white',
                             cursor: 'pointer',
-                            fontSize: '1.25rem'
+                            fontSize: '1.25rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#666'
                           }}
                         >
                           −
@@ -196,16 +224,20 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
                             width: '32px',
                             height: '32px',
                             borderRadius: '50%',
-                            border: 'none',
-                            backgroundColor: '#f3f4f6',
+                            border: `1px solid ${MAIN_COLOR}`,
+                            backgroundColor: MAIN_COLOR,
                             cursor: 'pointer',
-                            fontSize: '1.25rem'
+                            fontSize: '1.25rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white'
                           }}
                         >
                           +
                         </button>
                       </div>
-                      <span style={{ fontWeight: 'bold', color: '#b45309' }}>
+                      <span style={{ fontWeight: '700', color: MAIN_COLOR, fontSize: '1.125rem' }}>
                         {formatPrice(item.menuItem.price * item.quantity)}
                       </span>
                     </div>
@@ -219,17 +251,27 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
               backgroundColor: 'white',
               borderRadius: '1rem',
               padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              marginBottom: '6rem'
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              marginBottom: '7rem'
             }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                fontSize: '1.125rem'
+                paddingBottom: '1rem',
+                borderBottom: '1px solid #E0E0E0',
+                marginBottom: '1rem'
               }}>
-                <span style={{ fontWeight: '500', color: '#4b5563' }}>총 금액</span>
-                <span style={{ fontWeight: 'bold', color: '#78350f', fontSize: '1.25rem' }}>
+                <span style={{ color: '#666' }}>상품 금액</span>
+                <span style={{ fontWeight: '600' }}>{formatPrice(getTotalPrice())}</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <span style={{ fontWeight: '700', fontSize: '1.125rem' }}>총 결제 금액</span>
+                <span style={{ fontWeight: '700', color: MAIN_COLOR, fontSize: '1.5rem' }}>
                   {formatPrice(getTotalPrice())}
                 </span>
               </div>
@@ -246,21 +288,21 @@ const CartPage = ({ onBack, onOrder }: CartPageProps) => {
           left: 0,
           right: 0,
           backgroundColor: 'white',
-          padding: '1rem',
-          boxShadow: '0 -4px 6px rgba(0,0,0,0.1)'
+          padding: '1rem 1.5rem',
+          boxShadow: '0 -4px 12px rgba(0,0,0,0.08)'
         }}>
           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <button
               onClick={onOrder}
               style={{
                 width: '100%',
-                padding: '1rem',
-                backgroundColor: '#78350f',
+                padding: '1.125rem',
+                backgroundColor: MAIN_COLOR,
                 color: 'white',
                 border: 'none',
                 borderRadius: '0.75rem',
                 fontSize: '1.125rem',
-                fontWeight: 'bold',
+                fontWeight: '700',
                 cursor: 'pointer'
               }}
             >
