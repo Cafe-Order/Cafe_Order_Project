@@ -7,9 +7,10 @@ import { subscribeToMenus } from '../services/menuService';
 interface MenuPageProps {
   onCartClick: () => void;
   onOrderHistoryClick: () => void;
+  onBackToMain: () => void;
 }
 
-const MenuPage = ({ onCartClick, onOrderHistoryClick }: MenuPageProps) => {
+const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPageProps) => {
   const { user, logoutUser } = useAuth();
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory | 'all'>('all');
@@ -48,6 +49,7 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick }: MenuPageProps) => {
   // 로그아웃
   const handleLogout = async () => {
     await logoutUser();
+    onBackToMain();
   };
 
   return (
@@ -72,7 +74,20 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick }: MenuPageProps) => {
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* 메인으로 가기 버튼 */}
+            <button
+              onClick={onBackToMain}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '1.25rem',
+                cursor: 'pointer',
+                padding: '0.25rem'
+              }}
+            >
+              ←
+            </button>
             <span style={{ fontSize: '1.5rem' }}>☕</span>
             <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#78350f' }}>
               카페 오더

@@ -1,7 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-const LoginPage = () => {
+interface LoginPageProps {
+  onLoginSuccess?: () => void;
+  onBack?: () => void;
+}
+
+const LoginPage = ({ onLoginSuccess, onBack }: LoginPageProps) => {
   const { user, loading, loginWithGoogle, logoutUser } = useAuth();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -11,6 +16,9 @@ const LoginPage = () => {
     setError(null);
     try {
       await loginWithGoogle();
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
     } catch (err) {
       setError('로그인에 실패했습니다. 다시 시도해주세요.');
       console.error(err);
@@ -57,8 +65,28 @@ const LoginPage = () => {
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
         maxWidth: '400px',
         width: '100%',
-        margin: '1rem'
+        margin: '1rem',
+        position: 'relative'
       }}>
+        {/* 뒤로가기 버튼 */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              left: '1rem',
+              background: 'none',
+              border: 'none',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              padding: '0.5rem'
+            }}
+          >
+            ←
+          </button>
+        )}
+
         {/* 로고 & 타이틀 */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>☕</div>
@@ -108,22 +136,31 @@ const LoginPage = () => {
                 borderRadius: '0.5rem',
                 fontSize: '1rem',
                 fontWeight: '500',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                marginBottom: '1rem'
               }}
             >
               로그아웃
             </button>
 
-            <div style={{
-              marginTop: '1.5rem',
-              padding: '1rem',
-              backgroundColor: '#fef3c7',
-              borderRadius: '0.5rem',
-              fontSize: '0.875rem'
-            }}>
-              <p style={{ fontWeight: '600', marginBottom: '0.5rem' }}>📌 다음 단계:</p>
-              <p>로그인 성공! Git 커밋 후 다음 단계로 진행하세요.</p>
-            </div>
+            {onLoginSuccess && (
+              <button
+                onClick={onLoginSuccess}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: '#78350f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                주문하러 가기 →
+              </button>
+            )}
           </div>
         ) : (
           // 로그인 안된 상태
