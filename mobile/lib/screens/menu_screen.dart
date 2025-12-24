@@ -51,6 +51,9 @@ class _MenuScreenState extends State<MenuScreen>
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    }
   }
 
   Widget _buildMenuGrid(String category) {

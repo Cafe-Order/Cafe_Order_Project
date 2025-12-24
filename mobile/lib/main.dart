@@ -20,20 +20,34 @@ class MyApp extends StatelessWidget {
       title: 'Cafe Order',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.brown, useMaterial3: true),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-          if (snapshot.hasData) {
-            return const MenuScreen(); // 로그인 됨 → 메뉴 화면
-          }
-          return const LoginScreen(); // 로그인 안 됨 → 로그인 화면
-        },
-      ),
+      routes: {
+        '/': (context) => const AuthWrapper(),
+        '/login': (context) => const LoginScreen(),
+        '/menu': (context) => const MenuScreen(),
+      },
+      initialRoute: '/',
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasData) {
+          return const MenuScreen();
+        }
+        return const LoginScreen();
+      },
     );
   }
 }
