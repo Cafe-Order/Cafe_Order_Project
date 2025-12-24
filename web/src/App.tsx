@@ -1,10 +1,20 @@
+import { useState } from 'react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import LoginPage from './pages/LoginPage';
 import MenuPage from './pages/MenuPage';
+import CartPage from './pages/CartPage';
+import OrderPage from './pages/OrderPage';
+import OrderCompletePage from './pages/OrderCompletePage';
+import OrderHistoryPage from './pages/OrderHistoryPage';
+
+// 페이지 타입
+type Page = 'menu' | 'cart' | 'order' | 'orderComplete' | 'orderHistory';
 
 // 메인 콘텐츠 (로그인 상태에 따라 분기)
 const MainContent = () => {
   const { user, loading } = useAuth();
+  const [currentPage, setCurrentPage] = useState<Page>('menu');
+  const [completedOrderId, setCompletedOrderId] = useState<string>('');
 
   if (loading) {
     return (
@@ -20,8 +30,60 @@ const MainContent = () => {
     );
   }
 
-  // 로그인 안됐으면 로그인 페이지, 됐으면 메뉴 페이지
-  return user ? <MenuPage /> : <LoginPage />;
+  // 로그인 안됐으면 로그인 페이지
+  if (!user) {
+    return <LoginPage />;
+  }
+
+  // 페이지 네비게이션
+  switch (currentPage) {
+    case 'cart':
+      return (
+        <CartPage 
+          onBack={() => setCurrentPage('menu')}
+          onOrder={() => setCurrentPage('order')}
+        />
+      );
+    
+    case 'order':
+      return (
+        <OrderPage
+          onBack={() => setCurrentPage('cart')}
+          onOrderComplete={(orderId) => {
+            setCompletedOrderId(orderId);
+            setCurrentPage('orderComplete');
+          }}
+        />
+      );
+    
+    case 'orderComplete':
+      return (
+        <OrderCompletePage
+          orderId={completedOrderId}
+          onBackToMenu={() => setCurrentPage('menu')}
+        />
+      );
+    
+    case 'orderHistory':
+      return (
+        <OrderHistoryPage
+          onBack={() => setCurrentPage('menu')}
+          onOrderDetail={(orderId) => {
+            setCompletedOrderId(orderId);
+            setCurrentPage('orderComplete');
+          }}
+        />
+      );
+    
+    case 'menu':
+    default:
+      return (
+        <MenuPage 
+          onCartClick={() => setCurrentPage('cart')}
+          onOrderHistoryClick={() => setCurrentPage('orderHistory')}
+        />
+      );
+  }
 };
 
 function App() {
