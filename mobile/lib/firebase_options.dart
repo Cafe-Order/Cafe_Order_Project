@@ -25,9 +25,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -39,16 +45,6 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAvFPfn9Qu90NZtk4QgSSe0R90dmkLStl0',
-    appId: '1:397633807448:web:180c2547b16cebba69562d',
-    messagingSenderId: '397633807448',
-    projectId: 'pb-term-project',
-    authDomain: 'pb-term-project.firebaseapp.com',
-    storageBucket: 'pb-term-project.firebasestorage.app',
-    measurementId: 'G-MHSE4C72G4',
-  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCYVM4Dt-NtWWg3bkKuFDXPuiDBxtbki5M',
@@ -68,23 +64,14 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.mobile',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBc9zh5nSzOXjqr6NY92jjbR-Cd2QuxMnw',
-    appId: '1:397633807448:ios:f92620de8ae94b2869562d',
-    messagingSenderId: '397633807448',
-    projectId: 'pb-term-project',
-    storageBucket: 'pb-term-project.firebasestorage.app',
-    iosClientId: '397633807448-a8hlip1itofk6np55h9el6encvgpoaja.apps.googleusercontent.com',
-    iosBundleId: 'com.example.mobile',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
+  static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAvFPfn9Qu90NZtk4QgSSe0R90dmkLStl0',
-    appId: '1:397633807448:web:515c04c7508ce62b69562d',
+    appId: '1:397633807448:web:180c2547b16cebba69562d',
     messagingSenderId: '397633807448',
     projectId: 'pb-term-project',
     authDomain: 'pb-term-project.firebaseapp.com',
     storageBucket: 'pb-term-project.firebasestorage.app',
-    measurementId: 'G-9SK9K14Q96',
+    measurementId: 'G-MHSE4C72G4',
   );
+
 }
