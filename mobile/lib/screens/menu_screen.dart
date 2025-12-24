@@ -47,6 +47,8 @@ class _MenuScreenState extends State<MenuScreen>
         .doc(user.uid)
         .get();
 
+    if (!mounted) return;
+
     if (doc.exists && doc.data() != null) {
       final data = doc.data()!;
       final items = data['items'] as List<dynamic>? ?? [];
@@ -235,12 +237,12 @@ class _MenuScreenState extends State<MenuScreen>
                       builder: (context) => CartScreen(cartItems: cart),
                     ),
                   );
-                  if (result == true) {
-                    setState(() {
+                  setState(() {
+                    if (result == true) {
                       cart.clear();
-                    });
-                    _saveCart();
-                  }
+                      _saveCart();
+                    }
+                  });
                 },
               ),
               if (cart.isNotEmpty)
