@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CartScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -42,7 +44,7 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-  void _placeOrder() {
+  Future<void> _placeOrder() async {
     if (_cartItems.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -50,13 +52,44 @@ class _CartScreenState extends State<CartScreen> {
       return;
     }
 
-    // TODO: Firestore에 주문 저장
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('주문이 완료되었습니다!')));
-    setState(() {
-      _cartItems.clear();
-    });
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      // Firestore에 주문 저장
+      await FirebaseFirestore.instance.collection('orders').add({
+        'userId': user.uid,
+        'userEmail': user.email,
+        'items': _cartItems
+            .map(
+              (item) => {
+                'name': item['name'],
+                'price': item['price'],
+                'quantity': item['quantity'],
+              },
+            )
+            .toList(),
+        'totalPrice': totalPrice,
+        'status': '주문완료',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('주문이 완료되었습니다!')));
+        setState(() {
+          _cartItems.clear();
+        });
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('주문 실패: $e')));
+      }
+    }
   }
 
   @override
