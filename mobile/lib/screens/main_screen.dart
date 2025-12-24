@@ -15,11 +15,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const OrderScreen(),
-    const OrdersScreen(),
-  ];
+  void _navigateToOrder() {
+    setState(() => _currentIndex = 1);
+  }
 
   Future<void> _signOut() async {
     final googleSignIn = GoogleSignIn();
@@ -32,8 +30,14 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screens = [
+      HomeScreen(onNavigateToOrder: _navigateToOrder),
+      const OrderScreen(),
+      const OrdersScreen(),
+    ];
+
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: screens[_currentIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [

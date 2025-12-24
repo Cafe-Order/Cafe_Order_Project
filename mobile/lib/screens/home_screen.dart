@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onNavigateToOrder;
+
+  HomeScreen({super.key, this.onNavigateToOrder});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -241,12 +243,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 '추천 메뉴',
                 style: TextStyle(
                   fontSize: 20,
@@ -254,12 +256,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.black87,
                 ),
               ),
-              Text(
-                '더보기 >',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF00704A),
-                  fontWeight: FontWeight.w500,
+              GestureDetector(
+                onTap: widget.onNavigateToOrder,
+                child: const Text(
+                  '더보기 >',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF00704A),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -316,6 +321,17 @@ class _HomeScreenState extends State<HomeScreen> {
         icon = Icons.restaurant;
     }
 
+    // 이미지 URL 가져오기
+    String imageUrl = menu['imageUrl'] as String? ?? '';
+
+    // GitHub blob URL을 raw URL로 변환
+    if (imageUrl.contains('github.com') && imageUrl.contains('/blob/')) {
+      imageUrl = imageUrl
+          .replaceFirst('github.com', 'raw.githubusercontent.com')
+          .replaceFirst('/blob/', '/')
+          .replaceAll('?raw=true', '');
+    }
+
     return Container(
       width: 140,
       margin: const EdgeInsets.only(right: 12),
@@ -334,7 +350,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: const Color(0xFF00704A).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 40, color: const Color(0xFF00704A)),
+                clipBehavior: Clip.antiAlias,
+                child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            icon,
+                            size: 40,
+                            color: const Color(0xFF00704A),
+                          );
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF00704A),
+                            ),
+                          );
+                        },
+                      )
+                    : Icon(icon, size: 40, color: const Color(0xFF00704A)),
               ),
               const SizedBox(height: 12),
               Text(
