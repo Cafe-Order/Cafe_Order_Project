@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'menu_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -41,9 +42,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(
+        Navigator.pushReplacement(
           context,
-        ).showSnackBar(const SnackBar(content: Text('로그인 성공!')));
+          MaterialPageRoute(builder: (context) => const MenuScreen()),
+        );
       }
     } catch (e) {
       if (mounted) {
