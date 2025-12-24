@@ -106,7 +106,13 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <span style={{ color: 'white', fontSize: '1rem' }}>☕</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+                  <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>
+                  <line x1="6" y1="2" x2="6" y2="4"/>
+                  <line x1="10" y1="2" x2="10" y2="4"/>
+                  <line x1="14" y1="2" x2="14" y2="4"/>
+                </svg>
               </div>
               <span style={{ fontSize: '1.25rem', fontWeight: '800', color: MAIN_COLOR }}>
                 ORDER
@@ -114,24 +120,37 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {/* 주문내역 버튼 */}
             <button
               onClick={onOrderHistoryClick}
               style={{
-                padding: '0.625rem',
-                background: 'none',
-                border: `1px solid #E0E0E0`,
-                borderRadius: '50%',
-                cursor: 'pointer',
-                fontSize: '1.25rem',
+                width: '44px',
+                height: '44px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                background: 'none',
+                border: 'none',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = MAIN_LIGHTER;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
               }}
               title="주문내역"
             >
-              📋
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={MAIN_COLOR} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
             </button>
 
             {/* 장바구니 버튼 */}
@@ -139,29 +158,40 @@ const MenuPage = ({ onCartClick, onOrderHistoryClick, onBackToMain }: MenuPagePr
               onClick={onCartClick}
               style={{
                 position: 'relative',
-                padding: '0.625rem',
-                background: 'none',
-                border: `1px solid #E0E0E0`,
-                borderRadius: '50%',
-                cursor: 'pointer',
-                fontSize: '1.25rem',
+                width: '44px',
+                height: '44px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                background: 'none',
+                border: 'none',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = MAIN_LIGHTER;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              🛒
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={MAIN_COLOR} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
               {getTotalItems() > 0 && (
                 <span style={{
                   position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
+                  top: '4px',
+                  right: '4px',
                   backgroundColor: MAIN_COLOR,
                   color: 'white',
-                  fontSize: '0.7rem',
+                  fontSize: '0.65rem',
                   fontWeight: 'bold',
-                  width: '20px',
-                  height: '20px',
+                  width: '18px',
+                  height: '18px',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
