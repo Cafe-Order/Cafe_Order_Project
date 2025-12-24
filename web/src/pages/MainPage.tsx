@@ -13,26 +13,48 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
-  // 배너 데이터
+  // 배너 데이터 (겨울 이벤트 + 유머 컨셉 + 이미지)
   const banners = [
     {
       id: 1,
-      title: '따뜻한 겨울 음료',
-      subtitle: '추운 겨울, 따뜻한 한 잔의 여유',
+      badge: 'WINTER EVENT',
+      title: '겨울 1+10 이벤트',
+      subtitle: '1잔 사면 10잔? (아님 주의) 스탬프 모으면 진짜 드림 ☕',
+      image: '/images/onepulsten.png',
       bg: 'linear-gradient(180deg, #5D4037 0%, #3E2723 100%)',
     },
     {
       id: 2,
-      title: '신메뉴 출시',
-      subtitle: '달콤한 디저트와 함께하는 커피타임',
+      badge: '오늘만 몰래',
+      title: '손 시리면 +1샷',
+      subtitle: '장갑 끼고 오면 인정. 커피는 우리가 책임질게요.',
+      image: '/images/handcold.png',
       bg: 'linear-gradient(180deg, #4E342E 0%, #2E1B18 100%)',
     },
     {
       id: 3,
-      title: '모바일 주문',
-      subtitle: '간편하게 주문하고 바로 픽업하세요',
+      badge: '비밀 이벤트',
+      title: '"오늘 너무 춥다" 말하면',
+      subtitle: '쿠키 or 샷 랜덤 등장. 소곤소곤 말해야 효과 있음.',
+      image: '/images/toocold.png',
       bg: 'linear-gradient(180deg, #6D4C41 0%, #3E2723 100%)',
-    }
+    },
+    {
+      id: 4,
+      badge: '눈 오면 발동',
+      title: '눈 오는 날은 기분 서비스',
+      subtitle: '눈 오는 날 디저트는 0칼로리라고 믿어봅니다.',
+      image: '/images/snow.png',
+      bg: 'linear-gradient(180deg, #455A64 0%, #263238 100%)',
+    },
+    {
+      id: 5,
+      badge: '집중 모드',
+      title: '공부·업무 집중 이벤트',
+      subtitle: '2시간 앉아있으면 커피가 당신 편이 됩니다.',
+      image: '/images/study.png',
+      bg: 'linear-gradient(180deg, #37474F 0%, #263238 100%)',
+    },
   ];
 
   // 메뉴 실시간 구독
@@ -220,100 +242,142 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
         </div>
       </header>
 
-      {/* 히어로 섹션 - 앱 스타일 */}
+      {/* 히어로 섹션 - 이미지 포함 */}
       <section style={{
         background: banners[currentBanner].bg,
-        padding: '5rem 1rem',
+        padding: '3rem 1rem',
         transition: 'background 0.5s ease',
         position: 'relative',
+        minHeight: '500px',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '60vh',
-
-        // ✅ 화면 가로를 꽉 채우기 (부모 레이아웃 영향 제거)
         width: '100vw',
         marginLeft: 'calc(50% - 50vw)',
         marginRight: 'calc(50% - 50vw)'
       }}>
-        {/* 커피 아이콘 */}
-        <div style={{ marginBottom: '2rem' }}>
-          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.5">
-            <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-            <line x1="6" y1="2" x2="6" y2="4" />
-            <line x1="10" y1="2" x2="10" y2="4" />
-            <line x1="14" y1="2" x2="14" y2="4" />
-          </svg>
-        </div>
-
-        {/* 타이틀 */}
-        <h1 style={{ 
-          color: 'white', 
-          fontSize: '2.5rem', 
-          fontWeight: '700',
-          marginBottom: '1rem',
-          letterSpacing: '-0.02em'
+        <div style={{
+          maxWidth: '1000px',
+          margin: '0 auto',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '2rem',
+          padding: '0 1rem'
         }}>
-          Cafe Order
-        </h1>
+          {/* 텍스트 영역 */}
+          <div style={{ 
+            flex: 1,
+            color: 'white',
+            zIndex: 1
+          }}>
+            {/* 배지 */}
+            <span style={{
+              display: 'inline-block',
+              padding: '0.35rem 0.75rem',
+              borderRadius: '999px',
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              color: 'white',
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              marginBottom: '1rem'
+            }}>
+              {banners[currentBanner].badge}
+            </span>
 
-        {/* 서브타이틀 */}
-        <p style={{ 
-          color: 'rgba(255,255,255,0.8)', 
-          fontSize: '1.125rem',
-          marginBottom: '2.5rem'
-        }}>
-          맛있는 커피 한 잔 어떠세요?
-        </p>
+            {/* 타이틀 */}
+            <h1 style={{ 
+              fontSize: '2.5rem', 
+              fontWeight: '700',
+              marginBottom: '1rem',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+              {banners[currentBanner].title}
+            </h1>
 
-        {/* 주문하기 버튼 */}
-        <button
-          onClick={onOrderClick}
-          style={{
+            {/* 서브타이틀 */}
+            <p style={{ 
+              fontSize: '1.125rem',
+              marginBottom: '2rem',
+              opacity: 0.9,
+              lineHeight: 1.5
+            }}>
+              {banners[currentBanner].subtitle}
+            </p>
+
+            {/* 주문하기 버튼 */}
+            <button
+              onClick={onOrderClick}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '1rem 2rem',
+                backgroundColor: 'white',
+                color: '#5D4037',
+                border: 'none',
+                borderRadius: '3rem',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,0,0,0.25)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
+              }}
+            >
+              {user ? '주문하러 가기' : 'Google로 로그인'}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* 이미지 영역 */}
+          <div style={{
+            flex: 1,
             display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            padding: '1rem 2.5rem',
-            backgroundColor: 'white',
-            color: '#5D4037',
-            border: 'none',
-            borderRadius: '3rem',
-            fontSize: '1.125rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)';
-            e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,0,0,0.25)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
-          }}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-          {user ? '주문하러 가기' : 'Google로 로그인'}
-        </button>
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <img
+              src={banners[currentBanner].image}
+              alt={banners[currentBanner].title}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '400px',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.3))',
+                transition: 'opacity 0.5s ease',
+                borderRadius: '1rem'
+              }}
+            />
+          </div>
+        </div>
 
         {/* 배너 인디케이터 */}
         <div style={{
+          position: 'absolute',
+          bottom: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
           display: 'flex',
-          justifyContent: 'center',
-          gap: '0.5rem',
-          marginTop: '3rem'
+          gap: '0.5rem'
         }}>
           {banners.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentBanner(index)}
               style={{
-                width: index === currentBanner ? '1.5rem' : '0.5rem',
+                width: index === currentBanner ? '2rem' : '0.5rem',
                 height: '0.5rem',
                 borderRadius: '1rem',
                 border: 'none',

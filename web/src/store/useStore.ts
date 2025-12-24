@@ -32,8 +32,16 @@ export const useCartStore = create<CartStore>((set, get) => ({
   // 사용자 ID 설정
   setUserId: (userId) => set({ userId }),
   
-  // 아이템 설정 (Firebase에서 불러온 데이터)
-  setItems: (items) => set({ items }),
+  // 아이템 설정 (Firebase에서 불러온 데이터) - 유효한 데이터만 필터링
+  setItems: (items) => {
+    const validItems = items.filter(item => 
+      item && 
+      item.menuItem && 
+      item.menuItem.id && 
+      item.menuItem.price !== undefined
+    );
+    set({ items: validItems });
+  },
   
   // 로딩 상태 설정
   setLoading: (isLoading) => set({ isLoading }),
@@ -43,7 +51,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     const { items, userId } = get();
     
     const existingItem = items.find(
-      (item) => item.menuItem.id === menuItem.id
+      (item) => item.menuItem?.id === menuItem.id
     );
 
     let newItems: CartItem[];
@@ -51,7 +59,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     if (existingItem) {
       // 이미 있으면 수량 증가
       newItems = items.map((item) =>
-        item.menuItem.id === menuItem.id
+        item.menuItem?.id === menuItem.id
           ? { ...item, quantity: item.quantity + quantity }
           : item
       );
@@ -71,7 +79,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   // 장바구니에서 제거
   removeFromCart: (menuItemId: string) => {
     const { items, userId } = get();
-    const newItems = items.filter((item) => item.menuItem.id !== menuItemId);
+    const newItems = items.filter((item) => item.menuItem?.id !== menuItemId);
     
     set({ items: newItems });
     
@@ -91,7 +99,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     }
 
     const newItems = items.map((item) =>
-      item.menuItem.id === menuItemId ? { ...item, quantity } : item
+      item.menuItem?.id === menuItemId ? { ...item, quantity } : item
     );
     
     set({ items: newItems });
@@ -114,16 +122,19 @@ export const useCartStore = create<CartStore>((set, get) => ({
     }
   },
 
-  // 총 가격 계산
+  // 총 가격 계산 - 안전한 접근
   getTotalPrice: () => {
-    return get().items.reduce(
-      (total, item) => total + item.menuItem.price * item.quantity,
-      0
-    );
+    return get().items.reduce((total, item) => {
+      const price = item?.menuItem?.price || 0;
+      const quantity = item?.quantity || 0;
+      return total + (price * quantity);
+    }, 0);
   },
 
-  // 총 아이템 수 계산
+  // 총 아이템 수 계산 - 안전한 접근
   getTotalItems: () => {
-    return get().items.reduce((total, item) => total + item.quantity, 0);
+    return get().items.reduce((total, item) => {
+      return total + (item?.quantity || 0);
+    }, 0);
   },
 }));
