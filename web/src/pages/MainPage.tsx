@@ -24,7 +24,7 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
       id: 1,
       title: '2025 WINTER',
       title2: 'e-FREQUENCY',
-      subtitle: '[행사 기간] 12/01(월) ~ 12/31(목)',
+      subtitle: '[행사 기간] 12/01(월) ~ 12/31(수)',
       bg: 'linear-gradient(135deg, #3D7A5A 0%, #5A9E7C 50%, #7AB896 100%)',
       icon: (
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
