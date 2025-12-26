@@ -1,0 +1,28 @@
+name: Deploy to JCloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to JCloud
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.JCLOUD_HOST }}
+          username: ${{ secrets.JCLOUD_USER }}
+          password: ${{ secrets.JCLOUD_PASSWORD }}
+          port: ${{ secrets.JCLOUD_PORT }}
+          script: |
+            cd ~/Cafe_Order_Project
+            git pull origin main
+            cd web
+            npm install --legacy-peer-deps
+            npx vite build
+            sudo cp -r dist/* /var/www/html/
+            sudo systemctl restart nginx
+            echo "✅ 배포 완료: $(date)"
