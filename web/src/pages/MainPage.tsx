@@ -18,55 +18,55 @@ const MainPage = ({ onOrderClick, onLoginClick }: MainPageProps) => {
   const MAIN_LIGHT = '#2D5A45';
   const MAIN_LIGHTER = '#E8F0EC';
 
-  // 배너 데이터
-const banners = [
-  {
-    id: 1,
-    title: '2025 WINTER',
-    title2: 'e-FREQUENCY',
-    subtitle: '[행사 기간] 12/01(일) ~ 12/31(화)',
-    bg: 'linear-gradient(135deg, #20591E 0%, #1A4717 100%)',
-    icon: (
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="2" x2="12" y2="22" />
-        <line x1="2" y1="12" x2="22" y2="12" />
-        <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" />
-        <line x1="19.5" y1="4.5" x2="4.5" y2="19.5" />
-      </svg>
-    ),
-  },
-  {
-    id: 2,
-    title: '크리스마스 시즌',
-    title2: '스페셜 음료',
-    subtitle: '달콤한 연말의 시작',
-    bg: 'linear-gradient(135deg, #A63232 0%, #7E2626 100%)',
-    icon: (
-      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" />
-        <path d="M22 7H2v5h20V7z" />
-        <path d="M12 7v15" />
-        <path d="M12 7H8.5a2.5 2.5 0 1 1 0-5c2.4 0 3.5 2.7 3.5 5z" />
-        <path d="M12 7h3.5a2.5 2.5 0 1 0 0-5c-2.4 0-3.5 2.7-3.5 5z" />
-      </svg>
-    ),
-  },
-  {
-    id: 3,
-    title: '신규 회원',
-    title2: '첫 주문 할인',
-    subtitle: '아메리카노 50% 할인',
-    bg: 'linear-gradient(135deg, #593F2F 0%, #3F2C21 100%)',
-    icon: (
-           <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 12l-8 8a2 2 0 0 1-2.8 0L2 12V2h10l8 8z" />
-        <circle cx="7" cy="7" r="1.5" />
-      </svg>
-    ),
-  },
-];
+  // 배너 데이터 - 연하고 자연스러운 그라데이션
+  const banners = [
+    {
+      id: 1,
+      title: '2025 WINTER',
+      title2: 'e-FREQUENCY',
+      subtitle: '[행사 기간] 12/01(일) ~ 12/31(화)',
+      bg: 'linear-gradient(135deg, #3D7A5A 0%, #5A9E7C 50%, #7AB896 100%)',
+      icon: (
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="2" x2="12" y2="22" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" />
+          <line x1="19.5" y1="4.5" x2="4.5" y2="19.5" />
+        </svg>
+      ),
+    },
+    {
+      id: 2,
+      title: '크리스마스 시즌',
+      title2: '스페셜 음료',
+      subtitle: '달콤한 연말의 시작',
+      bg: 'linear-gradient(135deg, #C45B5B 0%, #D97B7B 50%, #E8A0A0 100%)',
+      icon: (
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" />
+          <path d="M22 7H2v5h20V7z" />
+          <path d="M12 7v15" />
+          <path d="M12 7H8.5a2.5 2.5 0 1 1 0-5c2.4 0 3.5 2.7 3.5 5z" />
+          <path d="M12 7h3.5a2.5 2.5 0 1 0 0-5c-2.4 0-3.5 2.7-3.5 5z" />
+        </svg>
+      ),
+    },
+    {
+      id: 3,
+      title: '신규 회원',
+      title2: '첫 주문 할인',
+      subtitle: '아메리카노 50% 할인',
+      bg: 'linear-gradient(135deg, #8B7355 0%, #A89078 50%, #C4B19E 100%)',
+      icon: (
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 12l-8 8a2 2 0 0 1-2.8 0L2 12V2h10l8 8z" />
+          <circle cx="7" cy="7" r="1.5" />
+        </svg>
+      ),
+    },
+  ];
 
-  // 이벤트 카드 데이터 (스타벅스 느낌: 여백/타이포 중심 + 은은한 포인트 컬러)
+  // 이벤트 카드 데이터
   const events = [
     {
       id: 1,
@@ -315,7 +315,8 @@ const banners = [
                 fontWeight: '800',
                 marginBottom: '0.25rem',
                 letterSpacing: '-0.01em',
-                lineHeight: 1.2
+                lineHeight: 1.2,
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
               }}>
                 {banners[currentBanner].title}
               </h1>
@@ -325,15 +326,16 @@ const banners = [
                 fontWeight: '800',
                 marginBottom: '1rem',
                 letterSpacing: '-0.01em',
-                lineHeight: 1.2
+                lineHeight: 1.2,
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
               }}>
                 {banners[currentBanner].title2}
               </h2>
 
               <p style={{ 
                 fontSize: '1rem',
-                opacity: 0.9,
-                fontWeight: '400'
+                opacity: 0.95,
+                fontWeight: '500'
               }}>
                 {banners[currentBanner].subtitle}
               </p>
@@ -342,7 +344,7 @@ const banners = [
             {/* 아이콘 영역 */}
             <div style={{
               fontSize: '5rem',
-              opacity: 0.3
+              opacity: 0.25
             }}>
               {banners[currentBanner].icon}
             </div>
@@ -366,7 +368,7 @@ const banners = [
                   height: '0.5rem',
                   borderRadius: '1rem',
                   border: 'none',
-                  backgroundColor: index === currentBanner ? 'white' : 'rgba(255,255,255,0.4)',
+                  backgroundColor: index === currentBanner ? 'white' : 'rgba(255,255,255,0.5)',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease'
                 }}
@@ -503,7 +505,7 @@ const banners = [
         )}
       </section>
 
-      {/* 이벤트 카드 섹션 (추천 메뉴 아래) */}
+      {/* 이벤트 카드 섹션 */}
       <section style={{
         maxWidth: '1200px',
         margin: '0 auto',
@@ -554,19 +556,19 @@ const banners = [
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               }}
               onMouseEnter={(e) => {
-  e.currentTarget.style.transform = 'translateY(-3px)';
-  e.currentTarget.style.boxShadow = '0 12px 26px rgba(0,0,0,0.10)';
-}}
-onMouseLeave={(e) => {
-  e.currentTarget.style.transform = 'translateY(0)';
-  e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.06)';
-}}
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.boxShadow = '0 12px 26px rgba(0,0,0,0.10)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.06)';
+              }}
             >
-              {/* 좌측 포인트 바 (Starbucks 느낌) */}
+              {/* 좌측 포인트 바 */}
               <div style={{
-  width: '10px',
-  backgroundColor: ev.accent, // 단색
-}} />
+                width: '10px',
+                backgroundColor: ev.accent,
+              }} />
 
               {/* 본문 */}
               <div style={{
@@ -669,7 +671,7 @@ onMouseLeave={(e) => {
                   </div>
                 </div>
 
-                {/* 우측 비주얼 (이미지 자리: 나중에 컵/제품 이미지로 교체 가능) */}
+                {/* 우측 비주얼 */}
                 <div style={{
                   width: '120px',
                   display: 'flex',
@@ -774,17 +776,14 @@ onMouseLeave={(e) => {
               height: '36px',
               borderRadius: '50%',
               backgroundColor: 'rgba(255,255,255,0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
-              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>
-              <line x1="6" y1="2" x2="6" y2="4"/>
-              <line x1="10" y1="2" x2="10" y2="4"/>
-              <line x1="14" y1="2" x2="14" y2="4"/>
-            </svg>
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>
+              </svg>
             </div>
             <span style={{ fontSize: '1.25rem', fontWeight: '700' }}>CAFE ORDER</span>
           </div>
