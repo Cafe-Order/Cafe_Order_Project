@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// AuthWrapper 클래스 추가
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
