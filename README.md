@@ -255,19 +255,18 @@ npm run preview
 ```
 
 ### 모바일 앱 실행
+#### Chrome (웹 브라우저)에서 실행
 
-**Android**
 ```bash
+# mobile 폴더에서
 cd mobile
+
+# Flutter 실행
 flutter run
-```
 
-**iOS** (macOS 필요)
-```bash
-cd mobile
-flutter run -d ios
+# 기기 선택 프롬프트에서 Chrome 선택
+[2]: Chrome (chrome)
 ```
-
 ### 린트 및 타입 체크 (웹)
 
 ```bash
@@ -329,7 +328,6 @@ npm run type-check
 | ![모바일 장바구니](images/mobile4.png) | ![모바일 주문](images/mobile5.png) | ![모바일 주문내역](images/mobile6.png) |
 | 장바구니 관리 | 주문하기 | 주문 상태 확인 |
 
-> 💡 **Tip**: 이미지를 `images/` 폴더에 업로드한 후 파일명을 위 경로와 일치시켜주세요.
 
 ## 개발 팀
 
