@@ -444,6 +444,7 @@ class _OrderScreenState extends State<OrderScreen>
                 );
               },
               backgroundColor: const Color(0xFF00704A),
+              foregroundColor: Colors.white, // 👈 이 줄 추가!
               icon: const Icon(Icons.shopping_cart),
               label: Text(
                 '장바구니 (${cart.length})',
